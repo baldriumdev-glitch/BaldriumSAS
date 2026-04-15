@@ -1,26 +1,35 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BaldriumSAS — API Tester</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
-      --bg:        #0d0f14;
-      --surface:   #151820;
-      --surface2:  #1c2030;
-      --border:    #2a2f42;
-      --accent:    #6c63ff;
-      --accent2:   #a78bfa;
-      --green:     #22c55e;
-      --red:       #ef4444;
-      --yellow:    #f59e0b;
-      --text:      #e2e8f0;
-      --muted:     #64748b;
-      --radius:    12px;
+      --bg: #0d0f14;
+      --surface: #151820;
+      --surface2: #1c2030;
+      --border: #2a2f42;
+      --accent: #6c63ff;
+      --accent2: #a78bfa;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --radius: 12px;
     }
 
     body {
@@ -37,15 +46,27 @@
       gap: 14px;
       margin-bottom: 32px;
     }
+
     .logo {
-      width: 44px; height: 44px;
+      width: 44px;
+      height: 44px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 20px;
     }
-    header h1 { font-size: 1.4rem; font-weight: 700; }
-    header p  { font-size: .8rem; color: var(--muted); }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    header p {
+      font-size: .8rem;
+      color: var(--muted);
+    }
 
     .grid {
       display: grid;
@@ -60,6 +81,7 @@
       border-radius: var(--radius);
       padding: 24px;
     }
+
     .card-title {
       font-size: .7rem;
       font-weight: 600;
@@ -71,14 +93,24 @@
       align-items: center;
       gap: 8px;
     }
+
     .dot {
-      width: 8px; height: 8px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: var(--accent);
     }
 
-    label { font-size: .82rem; color: var(--muted); display: block; margin-bottom: 5px; margin-top: 14px; }
-    input, select {
+    label {
+      font-size: .82rem;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 5px;
+      margin-top: 14px;
+    }
+
+    input,
+    select {
       width: 100%;
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -90,7 +122,11 @@
       transition: border-color .2s;
       outline: none;
     }
-    input:focus, select:focus { border-color: var(--accent); }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+    }
 
     textarea {
       width: 100%;
@@ -106,7 +142,10 @@
       transition: border-color .2s;
       min-height: 88px;
     }
-    textarea:focus { border-color: var(--accent); }
+
+    textarea:focus {
+      border-color: var(--accent);
+    }
 
     button {
       margin-top: 16px;
@@ -120,13 +159,40 @@
       cursor: pointer;
       transition: opacity .2s, transform .1s;
     }
-    button:active { transform: scale(.98); }
-    .btn-primary  { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
-    .btn-success  { background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; }
-    .btn-danger   { background: linear-gradient(135deg, #b91c1c, #ef4444); color: #fff; }
-    .btn-outline  { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    button:disabled { opacity: .5; cursor: not-allowed; }
-    button:not(:disabled):hover { opacity: .88; }
+
+    button:active {
+      transform: scale(.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #b91c1c, #ef4444);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    button:not(:disabled):hover {
+      opacity: .88;
+    }
 
     .status-bar {
       display: flex;
@@ -138,10 +204,26 @@
       font-weight: 500;
       margin-bottom: 12px;
     }
-    .status-idle    { background: rgba(100,116,139,.15); color: var(--muted); }
-    .status-ok      { background: rgba(34,197,94,.12);  color: var(--green); }
-    .status-error   { background: rgba(239,68,68,.12);  color: var(--red); }
-    .status-loading { background: rgba(108,99,255,.12); color: var(--accent2); }
+
+    .status-idle {
+      background: rgba(100, 116, 139, .15);
+      color: var(--muted);
+    }
+
+    .status-ok {
+      background: rgba(34, 197, 94, .12);
+      color: var(--green);
+    }
+
+    .status-error {
+      background: rgba(239, 68, 68, .12);
+      color: var(--red);
+    }
+
+    .status-loading {
+      background: rgba(108, 99, 255, .12);
+      color: var(--accent2);
+    }
 
     .token-box {
       background: var(--surface2);
@@ -156,7 +238,13 @@
       overflow-y: auto;
       margin-bottom: 12px;
     }
-    .token-none { color: var(--muted); font-style: italic; font-family: inherit; font-size: .82rem; }
+
+    .token-none {
+      color: var(--muted);
+      font-style: italic;
+      font-family: inherit;
+      font-size: .82rem;
+    }
 
     .response-box {
       font-family: 'JetBrains Mono', monospace;
@@ -171,14 +259,35 @@
       white-space: pre-wrap;
       line-height: 1.6;
     }
-    .response-empty { color: var(--muted); font-family: inherit; font-style: italic; font-size: .82rem; }
 
-    .json-key   { color: #7dd3fc; }
-    .json-str   { color: #86efac; }
-    .json-num   { color: #fbbf24; }
-    .json-bool  { color: #f472b6; }
+    .response-empty {
+      color: var(--muted);
+      font-family: inherit;
+      font-style: italic;
+      font-size: .82rem;
+    }
 
-    .separator  { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+    .json-key {
+      color: #7dd3fc;
+    }
+
+    .json-str {
+      color: #86efac;
+    }
+
+    .json-num {
+      color: #fbbf24;
+    }
+
+    .json-bool {
+      color: #f472b6;
+    }
+
+    .separator {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 20px 0;
+    }
 
     .badge {
       display: inline-flex;
@@ -189,11 +298,27 @@
       font-size: .7rem;
       font-weight: 600;
     }
-    .badge-green  { background: rgba(34,197,94,.15);  color: var(--green); }
-    .badge-red    { background: rgba(239,68,68,.15);  color: var(--red); }
-    .badge-purple { background: rgba(108,99,255,.15); color: var(--accent2); }
 
-    .col-right { display: flex; flex-direction: column; gap: 20px; }
+    .badge-green {
+      background: rgba(34, 197, 94, .15);
+      color: var(--green);
+    }
+
+    .badge-red {
+      background: rgba(239, 68, 68, .15);
+      color: var(--red);
+    }
+
+    .badge-purple {
+      background: rgba(108, 99, 255, .15);
+      color: var(--accent2);
+    }
+
+    .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
     .endpoint-row {
       display: flex;
@@ -201,6 +326,7 @@
       gap: 10px;
       margin-bottom: 10px;
     }
+
     .method-tag {
       font-family: 'JetBrains Mono', monospace;
       font-size: .7rem;
@@ -209,8 +335,17 @@
       border-radius: 5px;
       flex-shrink: 0;
     }
-    .m-post { background: rgba(34,197,94,.15);  color: var(--green); }
-    .m-get  { background: rgba(108,99,255,.15); color: var(--accent2); }
+
+    .m-post {
+      background: rgba(34, 197, 94, .15);
+      color: var(--green);
+    }
+
+    .m-get {
+      background: rgba(108, 99, 255, .15);
+      color: var(--accent2);
+    }
+
     .url-tag {
       font-family: 'JetBrains Mono', monospace;
       font-size: .78rem;
@@ -218,9 +353,15 @@
       opacity: .7;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     .spinner {
-      width: 14px; height: 14px;
+      width: 14px;
+      height: 14px;
       border: 2px solid transparent;
       border-top-color: currentColor;
       border-radius: 50%;
@@ -229,65 +370,72 @@
     }
   </style>
 </head>
+
 <body>
 
-<header>
-  <div class="logo">⚡</div>
-  <div>
-    <h1>BaldriumSAS — API Tester</h1>
-    <p>Prueba el sistema de autenticación JWT</p>
-  </div>
-  <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
-    <span class="badge badge-purple" id="tokenBadge">Sin sesión</span>
-  </div>
-</header>
-
-<div class="grid">
-
-  <!-- ── COLUMNA IZQUIERDA ──────────────────── -->
-  <div style="display:flex; flex-direction:column; gap:20px;">
-
-    <!-- Login -->
-    <div class="card">
-      <div class="card-title"><div class="dot"></div> Iniciar Sesión</div>
-      <div class="endpoint-row">
-        <span class="method-tag m-post">POST</span>
-        <span class="url-tag">/api/auth/login</span>
-      </div>
-
-      <label>Cédula</label>
-      <input id="loginCedula" type="text" placeholder="Ej: 1000000001" value="1000000001"/>
-
-      <label>Contraseña</label>
-      <input id="loginContrasena" type="password" placeholder="••••••••" value="admin123"/>
-
-      <div id="loginStatus" class="status-bar status-idle" style="margin-top:14px;">
-        ⏳ Ingresa tus credenciales y haz clic en Ingresar
-      </div>
-
-      <button class="btn-primary" onclick="doLogin()">🔐 Ingresar</button>
+  <header>
+    <div class="logo">⚡</div>
+    <div>
+      <h1>BaldriumSAS — API Tester</h1>
+      <p>Prueba el sistema de autenticación JWT</p>
     </div>
-
-    <!-- Token actual -->
-    <div class="card">
-      <div class="card-title"><div class="dot" style="background:var(--green)"></div> Token JWT Activo</div>
-      <div id="tokenBox" class="token-box">
-        <span class="token-none">Sin token — inicia sesión primero</span>
-      </div>
-      <button class="btn-outline" style="margin-top:0" onclick="clearToken()">🗑️ Cerrar sesión</button>
+    <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+      <span class="badge badge-purple" id="tokenBadge">Sin sesión</span>
     </div>
+  </header>
 
-    <!-- Crear trabajador -->
-    <div class="card">
-      <div class="card-title"><div class="dot" style="background:var(--yellow)"></div> Crear Trabajador</div>
-      <div class="endpoint-row">
-        <span class="method-tag m-post">POST</span>
-        <span class="url-tag">/api/trabajador</span>
+  <div class="grid">
+
+    <!-- ── COLUMNA IZQUIERDA ──────────────────── -->
+    <div style="display:flex; flex-direction:column; gap:20px;">
+
+      <!-- Login -->
+      <div class="card">
+        <div class="card-title">
+          <div class="dot"></div> Iniciar Sesión
+        </div>
+        <div class="endpoint-row">
+          <span class="method-tag m-post">POST</span>
+          <span class="url-tag">/api/auth/login</span>
+        </div>
+
+        <label>Cédula</label>
+        <input id="loginCedula" type="text" placeholder="Ej: 1000000001" value="1000000001" />
+
+        <label>Contraseña</label>
+        <input id="loginContrasena" type="password" placeholder="••••••••" value="admin123" />
+
+        <div id="loginStatus" class="status-bar status-idle" style="margin-top:14px;">
+          ⏳ Ingresa tus credenciales y haz clic en Ingresar
+        </div>
+
+        <button class="btn-primary" onclick="doLogin()">🔐 Ingresar</button>
       </div>
-      <p style="font-size:.75rem; color:var(--muted); margin-bottom:8px;">⚠️ Requiere rol Dirección o Coordinación</p>
 
-      <label>JSON del trabajador</label>
-      <textarea id="crearBody">{
+      <!-- Token actual -->
+      <div class="card">
+        <div class="card-title">
+          <div class="dot" style="background:var(--green)"></div> Token JWT Activo
+        </div>
+        <div id="tokenBox" class="token-box">
+          <span class="token-none">Sin token — inicia sesión primero</span>
+        </div>
+        <button class="btn-outline" style="margin-top:0" onclick="clearToken()">🗑️ Cerrar sesión</button>
+      </div>
+
+      <!-- Crear trabajador -->
+      <div class="card">
+        <div class="card-title">
+          <div class="dot" style="background:var(--yellow)"></div> Crear Trabajador
+        </div>
+        <div class="endpoint-row">
+          <span class="method-tag m-post">POST</span>
+          <span class="url-tag">/api/trabajador</span>
+        </div>
+        <p style="font-size:.75rem; color:var(--muted); margin-bottom:8px;">⚠️ Requiere rol Dirección o Coordinación</p>
+
+        <label>JSON del trabajador</label>
+        <textarea id="crearBody">{
   "Cedula": "1002345678",
   "Contrasena": "miClave123",
   "Nombre": "Ana López",
@@ -299,203 +447,214 @@
   "roles": [1]
 }</textarea>
 
-      <div id="crearStatus" class="status-bar status-idle" style="margin-top:14px;">
-        ⏳ Requiere token activo
+        <div id="crearStatus" class="status-bar status-idle" style="margin-top:14px;">
+          ⏳ Requiere token activo
+        </div>
+        <button class="btn-success" onclick="doCrear()">➕ Crear Trabajador</button>
       </div>
-      <button class="btn-success" onclick="doCrear()">➕ Crear Trabajador</button>
+    </div>
+
+    <!-- ── COLUMNA DERECHA ──────────────────── -->
+    <div class="col-right">
+
+      <!-- Ruta protegida -->
+      <div class="card">
+        <div class="card-title">
+          <div class="dot" style="background:var(--accent2)"></div> Probar Ruta Protegida
+        </div>
+        <div class="endpoint-row">
+          <span class="method-tag m-get">GET</span>
+          <span class="url-tag">/api/protegido</span>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:6px;">
+          <button class="btn-primary" style="margin-top:0" onclick="doProtected(true)">🔑 Con Token</button>
+          <button class="btn-danger" style="margin-top:0" onclick="doProtected(false)">🚫 Sin Token</button>
+        </div>
+      </div>
+
+      <!-- Respuesta -->
+      <div class="card" style="flex:1">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+          <div class="card-title" style="margin-bottom:0">
+            <div class="dot" style="background:var(--yellow)"></div> Respuesta del Servidor
+          </div>
+          <div id="responseBadge"></div>
+        </div>
+
+        <div id="statusBar" class="status-bar status-idle">⏳ Esperando una solicitud...</div>
+        <div id="responseBox" class="response-box">
+          <span class="response-empty">La respuesta aparecerá aquí...</span>
+        </div>
+
+        <div style="margin-top:12px; display:flex; align-items:center; gap:8px;">
+          <button class="btn-outline" style="margin-top:0; width:auto; padding:6px 16px; font-size:.78rem;"
+            onclick="copyResponse()">📋 Copiar</button>
+          <button class="btn-outline" style="margin-top:0; width:auto; padding:6px 16px; font-size:.78rem;"
+            onclick="clearResponse()">🗑️ Limpiar</button>
+          <span id="responseTime" style="font-size:.75rem; color:var(--muted); margin-left:auto;"></span>
+        </div>
+      </div>
+
+      <!-- Usuario actual -->
+      <div class="card" id="userCard" style="display:none;">
+        <div class="card-title">
+          <div class="dot" style="background:var(--green)"></div> Sesión Activa
+        </div>
+        <div id="userInfo"></div>
+      </div>
+
     </div>
   </div>
 
-  <!-- ── COLUMNA DERECHA ──────────────────── -->
-  <div class="col-right">
+  <script>
+    let currentToken = null;
 
-    <!-- Ruta protegida -->
-    <div class="card">
-      <div class="card-title"><div class="dot" style="background:var(--accent2)"></div> Probar Ruta Protegida</div>
-      <div class="endpoint-row">
-        <span class="method-tag m-get">GET</span>
-        <span class="url-tag">/api/protegido</span>
-      </div>
-      <div style="display:flex; gap:10px; margin-top:6px;">
-        <button class="btn-primary" style="margin-top:0" onclick="doProtected(true)">🔑 Con Token</button>
-        <button class="btn-danger"  style="margin-top:0" onclick="doProtected(false)">🚫 Sin Token</button>
-      </div>
-    </div>
+    // ── Helpers ──────────────────────────────────────────────
+    function setStatus(id, type, msg) {
+      const el = document.getElementById(id);
+      el.className = 'status-bar status-' + type;
+      el.innerHTML = msg;
+    }
 
-    <!-- Respuesta -->
-    <div class="card" style="flex:1">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-        <div class="card-title" style="margin-bottom:0"><div class="dot" style="background:var(--yellow)"></div> Respuesta del Servidor</div>
-        <div id="responseBadge"></div>
-      </div>
+    function showResponse(data, status, ms) {
+      const box = document.getElementById('responseBox');
+      const badge = document.getElementById('responseBadge');
+      const bar = document.getElementById('statusBar');
+      const time = document.getElementById('responseTime');
 
-      <div id="statusBar" class="status-bar status-idle">⏳ Esperando una solicitud...</div>
-      <div id="responseBox" class="response-box">
-        <span class="response-empty">La respuesta aparecerá aquí...</span>
-      </div>
+      const isOk = status >= 200 && status < 300;
+      bar.className = 'status-bar ' + (isOk ? 'status-ok' : 'status-error');
+      bar.innerHTML = isOk ? `✅ ${status} OK` : `❌ ${status} Error`;
+      badge.innerHTML = `<span class="badge ${isOk ? 'badge-green' : 'badge-red'}">${status}</span>`;
+      time.textContent = `${ms}ms`;
 
-      <div style="margin-top:12px; display:flex; align-items:center; gap:8px;">
-        <button class="btn-outline" style="margin-top:0; width:auto; padding:6px 16px; font-size:.78rem;" onclick="copyResponse()">📋 Copiar</button>
-        <button class="btn-outline" style="margin-top:0; width:auto; padding:6px 16px; font-size:.78rem;" onclick="clearResponse()">🗑️ Limpiar</button>
-        <span id="responseTime" style="font-size:.75rem; color:var(--muted); margin-left:auto;"></span>
-      </div>
-    </div>
+      box.innerHTML = syntaxHighlight(JSON.stringify(data, null, 2));
+    }
 
-    <!-- Usuario actual -->
-    <div class="card" id="userCard" style="display:none;">
-      <div class="card-title"><div class="dot" style="background:var(--green)"></div> Sesión Activa</div>
-      <div id="userInfo"></div>
-    </div>
+    function syntaxHighlight(json) {
+      return json
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (m) => {
+          let cls = 'json-num';
+          if (/^"/.test(m)) cls = /:$/.test(m) ? 'json-key' : 'json-str';
+          else if (/true|false/.test(m)) cls = 'json-bool';
+          return `<span class="${cls}">${m}</span>`;
+        });
+    }
 
-  </div>
-</div>
+    function setToken(token, usuario) {
+      currentToken = token;
+      document.getElementById('tokenBox').innerHTML = token;
+      document.getElementById('tokenBadge').innerHTML = '🟢 Sesión activa';
+      document.getElementById('tokenBadge').className = 'badge badge-green';
 
-<script>
-  let currentToken = null;
-
-  // ── Helpers ──────────────────────────────────────────────
-  function setStatus(id, type, msg) {
-    const el = document.getElementById(id);
-    el.className = 'status-bar status-' + type;
-    el.innerHTML = msg;
-  }
-
-  function showResponse(data, status, ms) {
-    const box   = document.getElementById('responseBox');
-    const badge = document.getElementById('responseBadge');
-    const bar   = document.getElementById('statusBar');
-    const time  = document.getElementById('responseTime');
-
-    const isOk = status >= 200 && status < 300;
-    bar.className = 'status-bar ' + (isOk ? 'status-ok' : 'status-error');
-    bar.innerHTML  = isOk ? `✅ ${status} OK` : `❌ ${status} Error`;
-    badge.innerHTML = `<span class="badge ${isOk ? 'badge-green' : 'badge-red'}">${status}</span>`;
-    time.textContent = `${ms}ms`;
-
-    box.innerHTML = syntaxHighlight(JSON.stringify(data, null, 2));
-  }
-
-  function syntaxHighlight(json) {
-    return json
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (m) => {
-        let cls = 'json-num';
-        if (/^"/.test(m)) cls = /:$/.test(m) ? 'json-key' : 'json-str';
-        else if (/true|false/.test(m)) cls = 'json-bool';
-        return `<span class="${cls}">${m}</span>`;
-      });
-  }
-
-  function setToken(token, usuario) {
-    currentToken = token;
-    document.getElementById('tokenBox').innerHTML = token;
-    document.getElementById('tokenBadge').innerHTML = '🟢 Sesión activa';
-    document.getElementById('tokenBadge').className = 'badge badge-green';
-
-    const roles = (usuario.roles || []).join(', ') || 'Sin rol';
-    document.getElementById('userCard').style.display = 'block';
-    document.getElementById('userInfo').innerHTML = `
+      const roles = (usuario.roles || []).join(', ') || 'Sin rol';
+      document.getElementById('userCard').style.display = 'block';
+      document.getElementById('userInfo').innerHTML = `
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; font-size:.82rem;">
         <div><span style="color:var(--muted)">Nombre</span><br><strong>${usuario.nombre}</strong></div>
         <div><span style="color:var(--muted)">Cédula</span><br><strong>${usuario.cedula}</strong></div>
         <div><span style="color:var(--muted)">Correo</span><br><strong>${usuario.correo || '—'}</strong></div>
         <div><span style="color:var(--muted)">Contrato</span><br><strong>${usuario.tipoContrato || '—'}</strong></div>
         <div style="grid-column:1/-1"><span style="color:var(--muted)">Roles</span><br>
-          ${(usuario.roles||[]).map(r=>`<span class="badge badge-purple" style="margin:2px">${r}</span>`).join('')}
+          ${(usuario.roles || []).map(r => `<span class="badge badge-purple" style="margin:2px">${r}</span>`).join('')}
         </div>
       </div>`;
-  }
+    }
 
-  function clearToken() {
-    currentToken = null;
-    document.getElementById('tokenBox').innerHTML = '<span class="token-none">Sin token — inicia sesión primero</span>';
-    document.getElementById('tokenBadge').innerHTML = 'Sin sesión';
-    document.getElementById('tokenBadge').className = 'badge badge-purple';
-    document.getElementById('userCard').style.display = 'none';
-    setStatus('loginStatus', 'idle', '⏳ Ingresa tus credenciales y haz clic en Ingresar');
-  }
+    function clearToken() {
+      currentToken = null;
+      document.getElementById('tokenBox').innerHTML = '<span class="token-none">Sin token — inicia sesión primero</span>';
+      document.getElementById('tokenBadge').innerHTML = 'Sin sesión';
+      document.getElementById('tokenBadge').className = 'badge badge-purple';
+      document.getElementById('userCard').style.display = 'none';
+      setStatus('loginStatus', 'idle', '⏳ Ingresa tus credenciales y haz clic en Ingresar');
+    }
 
-  function copyResponse() {
-    const text = document.getElementById('responseBox').innerText;
-    navigator.clipboard.writeText(text).then(() => alert('Respuesta copiada ✅'));
-  }
+    function copyResponse() {
+      const text = document.getElementById('responseBox').innerText;
+      navigator.clipboard.writeText(text).then(() => alert('Respuesta copiada ✅'));
+    }
 
-  function clearResponse() {
-    document.getElementById('responseBox').innerHTML = '<span class="response-empty">La respuesta aparecerá aquí...</span>';
-    document.getElementById('statusBar').className = 'status-bar status-idle';
-    document.getElementById('statusBar').innerHTML = '⏳ Esperando una solicitud...';
-    document.getElementById('responseBadge').innerHTML = '';
-    document.getElementById('responseTime').textContent = '';
-  }
+    function clearResponse() {
+      document.getElementById('responseBox').innerHTML = '<span class="response-empty">La respuesta aparecerá aquí...</span>';
+      document.getElementById('statusBar').className = 'status-bar status-idle';
+      document.getElementById('statusBar').innerHTML = '⏳ Esperando una solicitud...';
+      document.getElementById('responseBadge').innerHTML = '';
+      document.getElementById('responseTime').textContent = '';
+    }
+    const url = 'http://localhost:3000';
+    // ── Actions ──────────────────────────────────────────────
 
-  // ── Actions ──────────────────────────────────────────────
-  async function doLogin() {
-    const cedula     = document.getElementById('loginCedula').value.trim();
-    const contrasena = document.getElementById('loginContrasena').value;
-    if (!cedula || !contrasena) { setStatus('loginStatus','error','❌ Completa ambos campos'); return; }
+    async function doLogin() {
+      const cedula = document.getElementById('loginCedula').value.trim();
+      const contrasena = document.getElementById('loginContrasena').value;
+      if (!cedula || !contrasena) { setStatus('loginStatus', 'error', '❌ Completa ambos campos'); return; }
 
-    setStatus('loginStatus','loading','<span class="spinner"></span> Autenticando...');
-    const t0 = Date.now();
-    try {
-      const r = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cedula, contrasena })
-      });
-      const data = await r.json();
-      const ms   = Date.now() - t0;
-      showResponse(data, r.status, ms);
+      setStatus('loginStatus', 'loading', '<span class="spinner"></span> Autenticando...');
+      const t0 = Date.now();
 
-      if (r.ok) {
-        setToken(data.token, data.usuario);
-        setStatus('loginStatus','ok',`✅ Sesión iniciada como <strong>${data.usuario.nombre}</strong>`);
-      } else {
-        setStatus('loginStatus','error','❌ ' + (data.error || 'Credenciales inválidas'));
+      try {
+        const r = await fetch(`${url}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cedula, contrasena })
+        });
+        const data = await r.json();
+        const ms = Date.now() - t0;
+        showResponse(data, r.status, ms);
+
+        if (r.ok) {
+          setToken(data.token, data.usuario);
+          setStatus('loginStatus', 'ok', `✅ Sesión iniciada como <strong>${data.usuario.nombre}</strong>`);
+        } else {
+          setStatus('loginStatus', 'error', '❌ ' + (data.error || 'Credenciales inválidas'));
+        }
+      } catch (e) {
+        setStatus('loginStatus', 'error', '❌ No se pudo conectar con el servidor');
       }
-    } catch (e) {
-      setStatus('loginStatus','error','❌ No se pudo conectar con el servidor');
     }
-  }
 
-  async function doProtected(withToken) {
-    const t0 = Date.now();
-    const headers = {};
-    if (withToken && currentToken) headers['Authorization'] = 'Bearer ' + currentToken;
+    async function doProtected(withToken) {
+      const t0 = Date.now();
+      const headers = {};
+      if (withToken && currentToken) headers['Authorization'] = 'Bearer ' + currentToken;
 
-    try {
-      const r    = await fetch('/api/protegido', { headers });
-      const data = await r.json();
-      showResponse(data, r.status, Date.now() - t0);
-    } catch (e) {
-      document.getElementById('responseBox').innerHTML = '<span style="color:var(--red)">❌ Error de conexión</span>';
+      try {
+        const r = await fetch('/api/protegido', { headers });
+        const data = await r.json();
+        showResponse(data, r.status, Date.now() - t0);
+      } catch (e) {
+        document.getElementById('responseBox').innerHTML = '<span style="color:var(--red)">❌ Error de conexión</span>';
+      }
     }
-  }
 
-  async function doCrear() {
-    if (!currentToken) { setStatus('crearStatus','error','❌ Inicia sesión primero'); return; }
-    let body;
-    try { body = JSON.parse(document.getElementById('crearBody').value); }
-    catch { setStatus('crearStatus','error','❌ JSON inválido'); return; }
+    async function doCrear() {
+      if (!currentToken) { setStatus('crearStatus', 'error', '❌ Inicia sesión primero'); return; }
+      let body;
+      try { body = JSON.parse(document.getElementById('crearBody').value); }
+      catch { setStatus('crearStatus', 'error', '❌ JSON inválido'); return; }
 
-    setStatus('crearStatus','loading','<span class="spinner"></span> Creando trabajador...');
-    const t0 = Date.now();
-    try {
-      const r    = await fetch('/api/trabajador', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
-        body: JSON.stringify(body)
-      });
-      const data = await r.json();
-      showResponse(data, r.status, Date.now() - t0);
-      if (r.ok) setStatus('crearStatus','ok','✅ Trabajador creado correctamente');
-      else setStatus('crearStatus','error','❌ ' + (data.error || 'Error al crear'));
-    } catch { setStatus('crearStatus','error','❌ Error de conexión'); }
-  }
+      setStatus('crearStatus', 'loading', '<span class="spinner"></span> Creando trabajador...');
+      const t0 = Date.now();
+      try {
+        const r = await fetch('/api/trabajador', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify(body)
+        });
+        const data = await r.json();
+        showResponse(data, r.status, Date.now() - t0);
+        if (r.ok) setStatus('crearStatus', 'ok', '✅ Trabajador creado correctamente');
+        else setStatus('crearStatus', 'error', '❌ ' + (data.error || 'Error al crear'));
+      } catch { setStatus('crearStatus', 'error', '❌ Error de conexión'); }
+    }
 
-  // Enter key en login
-  document.getElementById('loginContrasena').addEventListener('keydown', e => {
-    if (e.key === 'Enter') doLogin();
-  });
-</script>
+    // Enter key en login
+    document.getElementById('loginContrasena').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+  </script>
 </body>
+
 </html>

@@ -1,7 +1,7 @@
-const express  = require('express');
-const router   = express.Router();
-const trabajadorServicio = require('../../logica/servicios/trabajadorServicio');
-const { verificarToken, verificarRol } = require('../../logica/seguridad/jwtMiddleware');
+const express = require('express');
+const router = express.Router();
+const trabajadorServicio = require('../servicios/trabajadorServicio');
+const { verificarToken, verificarRol } = require('../seguridad/jwtMiddleware');
 
 /**
  * POST /api/trabajador

@@ -1,9 +1,10 @@
-const { crearTrabajador, existeCedula } = require('../../persistencia/trabajadorRepositorio');
+const { crearTrabajador, existeCedula } = require('../db/trabajadorRepositorio');
 
 /**
  * Registra un nuevo trabajador con contraseña hasheada.
  * @param {Object} datos  Campos del trabajador
  * @param {number[]} roles  Array de IDs de rol
+ * REGISTRAR TRABAJADOR!!!
  */
 async function registrar(datos, roles = []) {
     const { Cedula, Contrasena, Nombre } = datos;
