@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { buscarPorCedula } = require('../db/trabajadorRepositorio');
+const { buscarPorCedula } = require('../../db/trabajadorRepositorio');
 
 /**
  * Autentica un trabajador con cédula y contraseña.
@@ -48,7 +48,7 @@ async function login(cedula, contrasena) {
             telefono: trabajador.Telefono,
             correo: trabajador.CorreoElectronico,
             direccion: trabajador.Direccion,
-            tipoContrato: trabajador.TipoContrato,
+            codigoTrabajador: trabajador.CodigoTrabajador,
             roles
         }
     };

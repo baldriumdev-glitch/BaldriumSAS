@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BaldriumSAS — Iniciar Sesión</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0f14;
+      --surface: #151820;
+      --surface2: #1c2030;
+      --border: #2a2f42;
+      --accent: #6c63ff;
+      --accent2: #a78bfa;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --radius: 14px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -250px; left: -250px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(108,99,255,.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -200px; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(167,139,250,.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 430px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 44px 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .brand-logo {
+      width: 60px; height: 60px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(108,99,255,.3);
+    }
+
+    .brand h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 6px;
+    }
+
+    .brand p {
+      font-size: .85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: .82rem;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+      margin-top: 18px;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--text);
+      padding: 12px 14px;
+      font-size: .9rem;
+      font-family: inherit;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(108,99,255,.12);
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border-radius: 9px;
+      font-size: .8rem;
+      font-weight: 500;
+      margin-top: 18px;
+    }
+
+    .status-idle    { background: rgba(100,116,139,.12); color: var(--muted); }
+    .status-ok      { background: rgba(34,197,94,.12);   color: var(--green); }
+    .status-error   { background: rgba(239,68,68,.12);   color: var(--red); }
+    .status-loading { background: rgba(108,99,255,.12);  color: var(--accent2); }
+
+    .btn-primary {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: .92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+      box-shadow: 0 4px 16px rgba(108,99,255,.25);
+    }
+
+    .btn-primary:hover  { opacity: .88; }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .btn-ghost {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 11px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: .88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+
+    .btn-ghost:hover { border-color: var(--yellow); color: var(--yellow); }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999;
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      width: 100%;
+      max-width: 400px;
+      transform: translateY(20px) scale(.97);
+      transition: transform .25s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    .modal-close {
+      float: right;
+      background: none; border: none;
+      color: var(--muted); font-size: 1.1rem;
+      cursor: pointer; padding: 0; line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    .modal-icon  { font-size: 28px; margin-bottom: 12px; display: block; }
+    .modal-title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .modal-sub   { font-size: .82rem; color: var(--muted); margin-bottom: 4px; line-height: 1.5; }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-logo">⚡</div>
+      <h1>BaldriumSAS</h1>
+      <p>Ingresa tus credenciales para acceder al sistema</p>
+    </div>
+
+    <label for="cedula">Cédula</label>
+    <input id="cedula" type="text" placeholder="Ej: 1000000001" autocomplete="username" />
+
+    <label for="contrasena">Contraseña</label>
+    <input id="contrasena" type="password" placeholder="••••••••" autocomplete="current-password" />
+
+    <div id="loginStatus" class="status-bar status-idle">
+      ⏳ Ingresa tus credenciales para continuar
+    </div>
+
+    <button class="btn-primary" id="btnLogin" onclick="doLogin()">🔐 Ingresar al sistema</button>
+    <button class="btn-ghost" onclick="abrirModal()">🔑 Olvidé mi contraseña</button>
+  </div>
+
+  <!-- Modal: Olvidé mi contraseña -->
+  <div class="modal-overlay" id="modalOverlay" onclick="cerrarModalSiOverlay(event)">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+      <span class="modal-icon">🔑</span>
+      <div class="modal-title">Recuperar contraseña</div>
+      <p class="modal-sub">
+        Ingresa el correo electrónico registrado en el sistema.
+        Si coincide, recibirás una contraseña temporal.
+      </p>
+
+      <label for="recuperarCorreo">Correo electrónico</label>
+      <input id="recuperarCorreo" type="email" placeholder="ejemplo@empresa.com" />
+
+      <div id="recuperarStatus" class="status-bar status-idle">
+        ⏳ Ingresa tu correo y presiona el botón
+      </div>
+
+      <button class="btn-primary" id="btnRecuperar" onclick="doOlvideMiContrasena()" style="margin-top:14px;">
+        📧 Enviar contraseña temporal
+      </button>
+      <button class="btn-ghost" onclick="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:3000';
+
+    // Si ya hay sesión activa, ir directo al panel
+    if (localStorage.getItem('baldrium_token')) {
+      window.location.href = 'index.html';
+    }
+
+    function setStatus(id, type, msg) {
+      const el = document.getElementById(id);
+      el.className = 'status-bar status-' + type;
+      el.innerHTML = msg;
+    }
+
+    async function doLogin() {
+      const cedula    = document.getElementById('cedula').value.trim();
+      const contrasena = document.getElementById('contrasena').value;
+
+      if (!cedula || !contrasena) {
+        setStatus('loginStatus', 'error', '❌ Completa la cédula y la contraseña');
+        return;
+      }
+
+      const btn = document.getElementById('btnLogin');
+      btn.disabled = true;
+      setStatus('loginStatus', 'loading', '<span class="spinner"></span> Verificando credenciales...');
+
+      try {
+        const r    = await fetch(`${API}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cedula, contrasena })
+        });
+        const data = await r.json();
+
+        if (r.ok) {
+          setStatus('loginStatus', 'ok', `✅ Bienvenido, <strong>${data.usuario.nombre}</strong>`);
+          localStorage.setItem('baldrium_token', data.token);
+          localStorage.setItem('baldrium_user',  JSON.stringify(data.usuario));
+          setTimeout(() => { window.location.href = 'index.html'; }, 500);
+        } else {
+          setStatus('loginStatus', 'error', '❌ ' + (data.error || 'Credenciales inválidas'));
+          btn.disabled = false;
+        }
+      } catch {
+        setStatus('loginStatus', 'error', '❌ No se pudo conectar con el servidor');
+        btn.disabled = false;
+      }
+    }
+
+    document.getElementById('contrasena').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+
+    // Modal: olvidé mi contraseña
+    function abrirModal() {
+      document.getElementById('recuperarCorreo').value = '';
+      setStatus('recuperarStatus', 'idle', '⏳ Ingresa tu correo y presiona el botón');
+      document.getElementById('btnRecuperar').disabled = false;
+      document.getElementById('modalOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('recuperarCorreo').focus(), 80);
+    }
+
+    function cerrarModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+    function cerrarModalSiOverlay(e) { if (e.target === document.getElementById('modalOverlay')) cerrarModal(); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
+    document.getElementById('recuperarCorreo').addEventListener('keydown', e => { if (e.key === 'Enter') doOlvideMiContrasena(); });
+
+    async function doOlvideMiContrasena() {
+      const correo = document.getElementById('recuperarCorreo').value.trim();
+      if (!correo || !correo.includes('@')) {
+        setStatus('recuperarStatus', 'error', '❌ Ingresa un correo electrónico válido');
+        return;
+      }
+
+      const btn = document.getElementById('btnRecuperar');
+      btn.disabled = true;
+      setStatus('recuperarStatus', 'loading', '<span class="spinner"></span> Enviando...');
+
+      try {
+        const r    = await fetch(`${API}/api/auth/olvide-contrasena`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ correo })
+        });
+        const data = await r.json();
+
+        if (r.ok && !data.error) {
+          setStatus('recuperarStatus', 'ok', '✅ Si el correo existe en el sistema, recibirás la contraseña temporal.');
+        } else {
+          setStatus('recuperarStatus', 'error', '❌ ' + (data.error || 'Error al procesar la solicitud'));
+          btn.disabled = false;
+        }
+      } catch {
+        setStatus('recuperarStatus', 'error', '❌ No se pudo conectar con el servidor');
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+
+</html>

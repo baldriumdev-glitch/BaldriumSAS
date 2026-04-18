@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BaldriumSAS — Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0f14;
+      --surface: #151820;
+      --surface2: #1c2030;
+      --border: #2a2f42;
+      --accent: #6c63ff;
+      --accent2: #a78bfa;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --radius: 12px;
+      --header-h: 64px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .app-header {
+      position: sticky;
+      top: 0;
+      height: var(--header-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 14px;
+      z-index: 100;
+    }
+
+    .header-logo {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .header-brand {
+      font-size: .95rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 22px;
+      background: var(--border);
+    }
+
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .user-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .user-meta { line-height: 1.35; }
+    .user-name  { font-size: .85rem; font-weight: 600; }
+    .user-roles { font-size: .72rem; color: var(--muted); }
+
+    .btn-logout {
+      padding: 7px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: .82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+      white-space: nowrap;
+    }
+    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    /* ── Main content ── */
+    main { padding: 28px; }
+
+    /* ── Tabs de roles ── */
+    .tabs-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .tabs-label {
+      font-size: .7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: .84rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color .2s, color .2s, background .2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover { color: var(--text); border-color: #3a3f56; }
+
+    .tab-btn.active {
+      border-color: var(--accent);
+      color: var(--accent2);
+      background: rgba(108,99,255,.08);
+      font-weight: 600;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .card-title {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+    /* ── Tabla ── */
+    .tabla-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .83rem;
+    }
+
+    th {
+      padding: 10px 14px;
+      text-align: left;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid rgba(42,47,66,.5);
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,.018); }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .7rem;
+      font-weight: 600;
+    }
+    .badge-green  { background: rgba(34,197,94,.15);  color: var(--green); }
+    .badge-red    { background: rgba(239,68,68,.15);  color: var(--red); }
+    .badge-purple { background: rgba(108,99,255,.15); color: var(--accent2); }
+
+    /* ── Botones de acción en tabla ── */
+    .action-btn {
+      padding: 5px 13px;
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: .76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s;
+      border: none;
+    }
+    .action-btn:hover { opacity: .82; }
+
+    .btn-edit    { background: rgba(108,99,255,.15); color: var(--accent2); border: 1px solid rgba(108,99,255,.25); }
+    .btn-delete  { background: rgba(239,68,68,.12);  color: var(--red);     border: 1px solid rgba(239,68,68,.2); }
+    .btn-restore { background: rgba(34,197,94,.12);  color: var(--green);   border: 1px solid rgba(34,197,94,.2); }
+
+    /* ── Botón nuevo usuario ── */
+    .btn-add {
+      padding: 9px 22px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: .86rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+      box-shadow: 0 3px 12px rgba(108,99,255,.2);
+    }
+    .btn-add:hover  { opacity: .88; }
+    .btn-add:active { transform: scale(.98); }
+
+    /* ── Status bar ── */
+    .status-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 13px; border-radius: 9px;
+      font-size: .8rem; font-weight: 500;
+      margin-bottom: 16px;
+    }
+    .status-idle    { background: rgba(100,116,139,.12); color: var(--muted); }
+    .status-ok      { background: rgba(34,197,94,.12);   color: var(--green); }
+    .status-error   { background: rgba(239,68,68,.12);   color: var(--red); }
+    .status-loading { background: rgba(108,99,255,.12);  color: var(--accent2); }
+
+    /* ── Spinner ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block;
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999;
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s;
+      padding: 24px;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      width: 100%;
+      max-width: 560px;
+      transform: translateY(18px) scale(.97);
+      transition: transform .25s;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    .modal-close {
+      float: right;
+      background: none; border: none;
+      color: var(--muted); font-size: 1.1rem;
+      cursor: pointer; padding: 0;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    .modal-icon  { font-size: 24px; margin-bottom: 10px; display: block; }
+    .modal-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 5px; }
+    .modal-sub   { font-size: .82rem; color: var(--muted); margin-bottom: 22px; line-height: 1.5; }
+
+    label {
+      font-size: .81rem;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 5px;
+      margin-top: 15px;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: .88rem;
+      font-family: inherit;
+      transition: border-color .2s;
+      outline: none;
+    }
+    input:focus   { border-color: var(--accent); }
+    input:disabled { opacity: .45; cursor: not-allowed; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 18px;
+    }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+    .checkbox-label {
+      display: flex; align-items: center; gap: 7px;
+      font-size: .82rem; color: var(--text);
+      cursor: pointer;
+      padding: 7px 13px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: border-color .2s;
+    }
+    .checkbox-label:hover { border-color: var(--accent); }
+    .checkbox-label input[type=checkbox] { width: auto; accent-color: var(--accent); }
+
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+    .btn-save {
+      flex: 1; padding: 11px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 8px;
+      font-family: inherit; font-size: .9rem; font-weight: 600;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .btn-save:hover { opacity: .88; }
+
+    .btn-cancel {
+      padding: 11px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text); border-radius: 8px;
+      font-family: inherit; font-size: .88rem;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .btn-cancel:hover { opacity: .75; }
+
+    /* ── Construcción placeholder ── */
+    .wip-card {
+      text-align: center;
+      padding: 60px 24px;
+    }
+    .wip-icon  { font-size: 2.8rem; margin-bottom: 14px; }
+    .wip-title { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+    .wip-sub   { font-size: .85rem; color: var(--muted); }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Header ── -->
+  <header class="app-header">
+    <div class="header-logo">⚡</div>
+    <span class="header-brand">BaldriumSAS</span>
+    <div class="header-divider"></div>
+    <span id="headerModule" style="font-size:.82rem; color:var(--muted);">Panel</span>
+
+    <div class="header-user">
+      <div class="user-avatar" id="userAvatar">--</div>
+      <div class="user-meta">
+        <div class="user-name"  id="userName">Cargando...</div>
+        <div class="user-roles" id="userRolesText"></div>
+      </div>
+      <button class="btn-logout" onclick="cerrarSesion()">↩ Salir</button>
+    </div>
+  </header>
+
+  <!-- ── Contenido ── -->
+  <main>
+    <div class="tabs-section">
+      <span class="tabs-label">Módulos</span>
+      <div id="rolTabs" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+    </div>
+
+    <div id="moduleContent">
+      <div class="card wip-card">
+        <div class="wip-icon">⚡</div>
+        <div class="wip-title">Cargando módulos...</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Modal: Crear / Editar usuario ── -->
+  <div class="modal-overlay" id="modalUsuario" onclick="cerrarModalSiOverlay(event)">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" onclick="cerrarModalUsuario()">✕</button>
+      <span class="modal-icon" id="modalIcon">👤</span>
+      <div class="modal-title" id="modalTitulo">Nuevo Usuario</div>
+      <p class="modal-sub" id="modalSub">Completa los campos para registrar un nuevo trabajador.</p>
+
+      <div class="form-grid">
+        <div>
+          <label>Cédula *</label>
+          <input id="uCedula" type="text" placeholder="1001234567" />
+        </div>
+        <div>
+          <label>Código Trabajador *</label>
+          <input id="uCodigo" type="text" placeholder="TRB-010" />
+        </div>
+        <div class="full">
+          <label>Nombre completo *</label>
+          <input id="uNombre" type="text" placeholder="Nombre Apellido" />
+        </div>
+        <div>
+          <label>Celular *</label>
+          <input id="uCelular" type="text" placeholder="3001234567" />
+        </div>
+        <div>
+          <label>Teléfono</label>
+          <input id="uTelefono" type="text" placeholder="6011234567" />
+        </div>
+        <div class="full">
+          <label>Correo electrónico *</label>
+          <input id="uCorreo" type="email" placeholder="usuario@empresa.com" />
+        </div>
+        <div class="full">
+          <label>Dirección *</label>
+          <input id="uDireccion" type="text" placeholder="Calle 10 #20-30, Bogotá" />
+        </div>
+        <div class="full" id="contrasenaGroup">
+          <label>Contraseña *</label>
+          <input id="uContrasena" type="password" placeholder="••••••••" />
+        </div>
+      </div>
+
+      <label style="margin-top:18px;">Roles</label>
+      <div id="rolesCheckboxes" class="checkbox-group"></div>
+
+      <div id="modalStatus" class="status-bar status-idle" style="margin-top:18px;">
+        ⏳ Completa los campos requeridos (*)
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-save" onclick="guardarUsuario()">💾 Guardar</button>
+        <button class="btn-cancel" onclick="cerrarModalUsuario()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:3000';
+
+    // ── Sesión ───────────────────────────────────────────────────────────────
+    const token  = localStorage.getItem('baldrium_token');
+    const usuario = JSON.parse(localStorage.getItem('baldrium_user') || 'null');
+
+    if (!token || !usuario) {
+      window.location.href = 'login.html';
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem('baldrium_token');
+      localStorage.removeItem('baldrium_user');
+      window.location.href = 'login.html';
+    }
+
+    // Wrapper de fetch: redirige al login si el token expiró (401)
+    async function apiFetch(endpoint, options = {}) {
+      try {
+        const r = await fetch(`${API}${endpoint}`, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+            ...(options.headers || {})
+          }
+        });
+        if (r.status === 401) { cerrarSesion(); return null; }
+        return r;
+      } catch {
+        return null;
+      }
+    }
+
+    // ── Header ───────────────────────────────────────────────────────────────
+    function iniciales(nombre) {
+      return (nombre || '')
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(p => p[0].toUpperCase())
+        .join('');
+    }
+
+    (function renderHeader() {
+      document.getElementById('userAvatar').textContent   = iniciales(usuario.nombre);
+      document.getElementById('userName').textContent     = usuario.nombre;
+      document.getElementById('userRolesText').textContent = (usuario.roles || []).join(' · ');
+    })();
+
+    // ── Módulos disponibles ───────────────────────────────────────────────────
+    const MODULOS = {
+      'Director': renderModuloDirector,
+    };
+
+    function construirTabs(roles) {
+      const container = document.getElementById('rolTabs');
+      container.innerHTML = '';
+      roles.forEach((rol, i) => {
+        const btn = document.createElement('button');
+        btn.className  = 'tab-btn' + (i === 0 ? ' active' : '');
+        btn.textContent = rol;
+        btn.onclick = () => seleccionarTab(rol, btn);
+        container.appendChild(btn);
+      });
+      if (roles.length > 0) {
+        seleccionarTab(roles[0], container.querySelector('.tab-btn.active'));
+      }
+    }
+
+    function seleccionarTab(rol, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('headerModule').textContent = rol;
+
+      const content = document.getElementById('moduleContent');
+      if (MODULOS[rol]) {
+        MODULOS[rol](content);
+      } else {
+        content.innerHTML = `
+          <div class="card wip-card">
+            <div class="wip-icon">🚧</div>
+            <div class="wip-title">Módulo: ${rol}</div>
+            <p class="wip-sub">Este módulo está en construcción.</p>
+          </div>`;
+      }
+    }
+
+    construirTabs(usuario.roles || []);
+
+    // ── Módulo Director — Gestión de Usuarios ─────────────────────────────────
+    let usuariosData    = [];
+    let rolesDisponibles = [];
+    let editandoCedula  = null;
+
+    function renderModuloDirector(container) {
+      container.innerHTML = `
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="dot" style="background:var(--green)"></div>
+              Gestión de Usuarios — Trabajadores
+            </div>
+            <button class="btn-add" onclick="abrirModalCrear()">➕ Nuevo Usuario</button>
+          </div>
+
+          <div id="tablaStatus" class="status-bar status-loading">
+            <span class="spinner"></span> Cargando trabajadores...
+          </div>
+
+          <div class="tabla-wrap">
+            <table id="tablaUsuarios" style="display:none;">
+              <thead>
+                <tr>
+                  <th>Cédula</th>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Celular</th>
+                  <th>Correo</th>
+                  <th>Roles</th>
+                  <th>Estado</th>
+                  <th style="text-align:center;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaBody"></tbody>
+            </table>
+          </div>
+          <p id="tablaVacia" style="color:var(--muted); font-size:.85rem; padding:8px 0; display:none;">
+            No hay trabajadores registrados.
+          </p>
+        </div>`;
+      cargarUsuarios();
+    }
+
+    async function cargarUsuarios() {
+      const statusEl = document.getElementById('tablaStatus');
+      if (!statusEl) return;
+
+      const r = await apiFetch('/api/Usuario');
+      if (!r) return;
+
+      const data = await r.json();
+
+      if (!r.ok) {
+        statusEl.className = 'status-bar status-error';
+        statusEl.innerHTML = '❌ ' + (data.error || 'Error al cargar los usuarios');
+        return;
+      }
+
+      usuariosData = data;
+      statusEl.style.display = 'none';
+      renderTabla(data);
+    }
+
+    function renderTabla(usuarios) {
+      const tabla = document.getElementById('tablaUsuarios');
+      const vacia = document.getElementById('tablaVacia');
+      const body  = document.getElementById('tablaBody');
+      if (!tabla) return;
+
+      if (!usuarios.length) {
+        tabla.style.display = 'none';
+        vacia.style.display = 'block';
+        return;
+      }
+
+      tabla.style.display = 'table';
+      vacia.style.display = 'none';
+
+      body.innerHTML = usuarios.map(u => `
+        <tr>
+          <td>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--muted);">${u.cedula}</span>
+          </td>
+          <td style="color:var(--muted); font-size:.8rem;">${u.codigoTrabajador}</td>
+          <td><strong>${u.nombre}</strong></td>
+          <td style="font-size:.82rem;">${u.celular}</td>
+          <td style="font-size:.8rem; color:var(--muted);">${u.correo}</td>
+          <td>
+            ${(u.roles || []).map(r =>
+              `<span class="badge badge-purple" style="margin:2px; font-size:.65rem;">${r.nombre}</span>`
+            ).join('') || '<span style="color:var(--muted); font-size:.78rem;">Sin rol</span>'}
+          </td>
+          <td>
+            <span class="badge ${u.activo ? 'badge-green' : 'badge-red'}">
+              ${u.activo ? 'Activo' : 'Inactivo'}
+            </span>
+          </td>
+          <td>
+            <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+              <button class="action-btn btn-edit" onclick="abrirModalEditar('${u.cedula}')">✏️ Editar</button>
+              ${u.activo
+                ? `<button class="action-btn btn-delete"  onclick="toggleEstado('${u.cedula}', false)">🗑️ Eliminar</button>`
+                : `<button class="action-btn btn-restore" onclick="toggleEstado('${u.cedula}', true)">↩ Restaurar</button>`
+              }
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+
+    async function toggleEstado(cedula, nuevoEstado) {
+      const r = await apiFetch(`/api/Usuario/${cedula}/estado`, {
+        method: 'PATCH',
+        body: JSON.stringify({ activo: nuevoEstado })
+      });
+      if (!r) return;
+      if (r.ok) {
+        await cargarUsuarios();
+      } else {
+        const data = await r.json();
+        alert('Error: ' + (data.error || 'No se pudo cambiar el estado'));
+      }
+    }
+
+    // ── Modal Crear / Editar ──────────────────────────────────────────────────
+    function setStatus(id, type, msg) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.className = 'status-bar status-' + type;
+      el.innerHTML = msg;
+    }
+
+    async function abrirModalCrear() {
+      editandoCedula = null;
+      document.getElementById('modalIcon').textContent   = '👤';
+      document.getElementById('modalTitulo').textContent = 'Nuevo Usuario';
+      document.getElementById('modalSub').textContent    = 'Completa los campos para registrar un nuevo trabajador.';
+      document.getElementById('uCedula').disabled = false;
+      ['uCedula','uCodigo','uNombre','uCelular','uTelefono','uCorreo','uDireccion','uContrasena']
+        .forEach(id => { document.getElementById(id).value = ''; });
+      document.getElementById('contrasenaGroup').style.display = 'block';
+      setStatus('modalStatus', 'idle', '⏳ Completa los campos requeridos (*)');
+      await cargarRolesCheckboxes([]);
+      document.getElementById('modalUsuario').classList.add('open');
+      setTimeout(() => document.getElementById('uCedula').focus(), 80);
+    }
+
+    async function abrirModalEditar(cedula) {
+      const u = usuariosData.find(x => x.cedula === cedula);
+      if (!u) return;
+
+      editandoCedula = cedula;
+      document.getElementById('modalIcon').textContent   = '✏️';
+      document.getElementById('modalTitulo').textContent = 'Editar Usuario';
+      document.getElementById('modalSub').textContent    = `Modificando datos de ${u.nombre}`;
+      document.getElementById('uCedula').value    = cedula;
+      document.getElementById('uCedula').disabled = true;
+      document.getElementById('uCodigo').value    = u.codigoTrabajador;
+      document.getElementById('uNombre').value    = u.nombre;
+      document.getElementById('uCelular').value   = u.celular;
+      document.getElementById('uTelefono').value  = u.telefono || '';
+      document.getElementById('uCorreo').value    = u.correo;
+      document.getElementById('uDireccion').value = u.direccion;
+      document.getElementById('contrasenaGroup').style.display = 'none';
+      setStatus('modalStatus', 'idle', '⏳ Modifica los campos necesarios');
+
+      const selectedIds = (u.roles || []).map(r => r.id);
+      await cargarRolesCheckboxes(selectedIds);
+      document.getElementById('modalUsuario').classList.add('open');
+    }
+
+    async function cargarRolesCheckboxes(selectedIds) {
+      if (!rolesDisponibles.length) {
+        const r = await apiFetch('/api/Usuario/roles');
+        if (r && r.ok) rolesDisponibles = await r.json();
+      }
+      document.getElementById('rolesCheckboxes').innerHTML = rolesDisponibles.map(rol => `
+        <label class="checkbox-label">
+          <input type="checkbox" value="${rol.id}" ${selectedIds.includes(rol.id) ? 'checked' : ''} />
+          ${rol.nombre}
+        </label>`).join('');
+    }
+
+    function cerrarModalUsuario() { document.getElementById('modalUsuario').classList.remove('open'); }
+    function cerrarModalSiOverlay(e) { if (e.target === document.getElementById('modalUsuario')) cerrarModalUsuario(); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModalUsuario(); });
+
+    function getRolesSeleccionados() {
+      return [...document.querySelectorAll('#rolesCheckboxes input[type=checkbox]:checked')]
+        .map(cb => parseInt(cb.value));
+    }
+
+    async function guardarUsuario() {
+      const datos = {
+        Cedula:            document.getElementById('uCedula').value.trim(),
+        CodigoTrabajador:  document.getElementById('uCodigo').value.trim(),
+        Nombre:            document.getElementById('uNombre').value.trim(),
+        Celular:           document.getElementById('uCelular').value.trim(),
+        Telefono:          document.getElementById('uTelefono').value.trim() || null,
+        CorreoElectronico: document.getElementById('uCorreo').value.trim(),
+        Direccion:         document.getElementById('uDireccion').value.trim(),
+      };
+      const roles = getRolesSeleccionados();
+
+      const faltante = ['Cedula','CodigoTrabajador','Nombre','Celular','CorreoElectronico','Direccion']
+        .some(k => !datos[k]);
+      if (faltante) {
+        setStatus('modalStatus', 'error', '❌ Completa todos los campos obligatorios (*)');
+        return;
+      }
+
+      setStatus('modalStatus', 'loading', '<span class="spinner"></span> Guardando...');
+
+      let r;
+      if (editandoCedula === null) {
+        const contrasena = document.getElementById('uContrasena').value;
+        if (!contrasena) { setStatus('modalStatus', 'error', '❌ La contraseña es requerida'); return; }
+        datos.Contrasena = contrasena;
+        r = await apiFetch('/api/Usuario', { method: 'POST', body: JSON.stringify({ ...datos, roles }) });
+      } else {
+        r = await apiFetch(`/api/Usuario/${editandoCedula}`, { method: 'PUT', body: JSON.stringify({ ...datos, roles }) });
+      }
+
+      if (!r) return;
+      const data = await r.json();
+
+      if (r.ok) {
+        setStatus('modalStatus', 'ok', '✅ ' + (data.mensaje || 'Guardado correctamente'));
+        setTimeout(async () => { cerrarModalUsuario(); await cargarUsuarios(); }, 700);
+      } else {
+        setStatus('modalStatus', 'error', '❌ ' + (data.error || 'Error al guardar'));
+      }
+    }
+  </script>
+</body>
+
+</html>

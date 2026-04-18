@@ -1,11 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 
-// Rutas
-const authRutas = require('./rutas/authRutas');
-const trabajadorRutas = require('./rutas/trabajadorRutas');
+const authRutas    = require('./rutas/authRutas');
+const usuarioRutas = require('./rutas/usuarioRutas');
 
-// Middleware de seguridad
 const { verificarToken } = require('./seguridad/jwtMiddleware');
 
 const app = express();
@@ -17,9 +15,9 @@ app.use(express.static(__dirname + '/public'));
 // ─── Rutas públicas ───────────────────────────────────────────────────────────
 app.use('/api/auth', authRutas);
 
-// ─── Rutas protegidas (requieren JWT válido) ──────────────────────────────────
-app.use('/api/trabajador', trabajadorRutas);
-// Ejemplo: cualquier ruta bajo /api/protegido exige token
+// ─── Rutas protegidas ─────────────────────────────────────────────────────────
+app.use('/api/Usuario', usuarioRutas);
+
 app.get('/api/protegido', verificarToken, (req, res) => {
     res.json({
         mensaje: `Bienvenido, ${req.usuario.nombre}`,
@@ -29,7 +27,7 @@ app.get('/api/protegido', verificarToken, (req, res) => {
 
 // ─── Ruta base ────────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
-    res.send('API BaldriumSAS funcionando 🚀');
+    res.send('API BaldriumSAS funcionando');
 });
 
 module.exports = app;

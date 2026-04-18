@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BaldriumSAS — API Tester</title>
+  <title>BaldriumSAS — Panel</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet" />
@@ -126,6 +126,11 @@
     input:focus,
     select:focus {
       border-color: var(--accent);
+    }
+
+    input:disabled {
+      opacity: .5;
+      cursor: not-allowed;
     }
 
     textarea {
@@ -314,6 +319,11 @@
       color: var(--accent2);
     }
 
+    .badge-yellow {
+      background: rgba(245, 158, 11, .15);
+      color: var(--yellow);
+    }
+
     .col-right {
       display: flex;
       flex-direction: column;
@@ -368,6 +378,204 @@
       animation: spin .7s linear infinite;
       display: inline-block;
     }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      width: 100%;
+      max-width: 420px;
+      transform: translateY(20px) scale(.97);
+      transition: transform .25s;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .modal-sub {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .modal-close {
+      float: right;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-top: 0;
+      width: auto;
+      padding: 0;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+    }
+
+    /* ── Módulos / Tabs ── */
+    #modulesSection {
+      max-width: 1400px;
+      margin-top: 28px;
+    }
+
+    .tabs-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tabs-bar-label {
+      font-size: .72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .tab-btn {
+      margin-top: 0 !important;
+      width: auto !important;
+      padding: 7px 18px !important;
+      font-size: .82rem !important;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: transparent;
+      border-radius: 8px;
+      transition: border-color .2s, color .2s;
+    }
+
+    .tab-btn.active {
+      border-color: var(--accent);
+      color: var(--accent2);
+      background: rgba(108, 99, 255, .08);
+    }
+
+    .tab-btn:hover:not(.active) {
+      border-color: var(--border);
+      color: var(--text);
+      opacity: 1;
+    }
+
+    /* ── Tabla de usuarios ── */
+    .tabla-usuarios {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+    }
+
+    .tabla-usuarios th {
+      padding: 10px 12px;
+      text-align: left;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .tabla-usuarios td {
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(42, 47, 66, .5);
+      vertical-align: middle;
+    }
+
+    .tabla-usuarios tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tabla-usuarios tr:hover td {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .action-btn {
+      margin-top: 0 !important;
+      width: auto !important;
+      padding: 4px 12px !important;
+      font-size: .75rem !important;
+      border-radius: 6px !important;
+    }
+
+    /* ── Modal de usuario (más ancho) ── */
+    .modal-lg {
+      max-width: 580px;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 16px;
+    }
+
+    .form-grid-2 .full {
+      grid-column: 1 / -1;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: .82rem;
+      color: var(--text);
+      cursor: pointer;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: border-color .2s;
+    }
+
+    .checkbox-label:hover {
+      border-color: var(--accent);
+    }
+
+    .checkbox-label input[type=checkbox] {
+      width: auto;
+      accent-color: var(--accent);
+    }
   </style>
 </head>
 
@@ -376,20 +584,20 @@
   <header>
     <div class="logo">⚡</div>
     <div>
-      <h1>BaldriumSAS — API Tester</h1>
-      <p>Prueba el sistema de autenticación JWT</p>
+      <h1>BaldriumSAS — Panel</h1>
+      <p>Sistema de gestión interno</p>
     </div>
     <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
       <span class="badge badge-purple" id="tokenBadge">Sin sesión</span>
     </div>
   </header>
 
+  <!-- ── Login y token ── -->
   <div class="grid">
 
-    <!-- ── COLUMNA IZQUIERDA ──────────────────── -->
+    <!-- Columna izquierda -->
     <div style="display:flex; flex-direction:column; gap:20px;">
 
-      <!-- Login -->
       <div class="card">
         <div class="card-title">
           <div class="dot"></div> Iniciar Sesión
@@ -410,9 +618,13 @@
         </div>
 
         <button class="btn-primary" onclick="doLogin()">🔐 Ingresar</button>
+
+        <button onclick="abrirModal()"
+          style="background:transparent; border:1px solid var(--yellow); color:var(--yellow); margin-top:8px; width:100%; padding:11px; border-radius:8px; border-style:solid; font-family:inherit; font-size:.88rem; font-weight:600; cursor:pointer;">
+          🔑 Olvidé mi contraseña
+        </button>
       </div>
 
-      <!-- Token actual -->
       <div class="card">
         <div class="card-title">
           <div class="dot" style="background:var(--green)"></div> Token JWT Activo
@@ -423,41 +635,11 @@
         <button class="btn-outline" style="margin-top:0" onclick="clearToken()">🗑️ Cerrar sesión</button>
       </div>
 
-      <!-- Crear trabajador -->
-      <div class="card">
-        <div class="card-title">
-          <div class="dot" style="background:var(--yellow)"></div> Crear Trabajador
-        </div>
-        <div class="endpoint-row">
-          <span class="method-tag m-post">POST</span>
-          <span class="url-tag">/api/trabajador</span>
-        </div>
-        <p style="font-size:.75rem; color:var(--muted); margin-bottom:8px;">⚠️ Requiere rol Dirección o Coordinación</p>
-
-        <label>JSON del trabajador</label>
-        <textarea id="crearBody">{
-  "Cedula": "1002345678",
-  "Contrasena": "miClave123",
-  "Nombre": "Ana López",
-  "Celular": "3109876543",
-  "Telefono": "6011234567",
-  "CorreoElectronico": "ana@empresa.com",
-  "Direccion": "Calle 10 #20-30",
-  "TipoContrato": "Indefinido",
-  "roles": [1]
-}</textarea>
-
-        <div id="crearStatus" class="status-bar status-idle" style="margin-top:14px;">
-          ⏳ Requiere token activo
-        </div>
-        <button class="btn-success" onclick="doCrear()">➕ Crear Trabajador</button>
-      </div>
     </div>
 
-    <!-- ── COLUMNA DERECHA ──────────────────── -->
+    <!-- Columna derecha -->
     <div class="col-right">
 
-      <!-- Ruta protegida -->
       <div class="card">
         <div class="card-title">
           <div class="dot" style="background:var(--accent2)"></div> Probar Ruta Protegida
@@ -472,7 +654,6 @@
         </div>
       </div>
 
-      <!-- Respuesta -->
       <div class="card" style="flex:1">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
           <div class="card-title" style="margin-bottom:0">
@@ -480,12 +661,10 @@
           </div>
           <div id="responseBadge"></div>
         </div>
-
         <div id="statusBar" class="status-bar status-idle">⏳ Esperando una solicitud...</div>
         <div id="responseBox" class="response-box">
           <span class="response-empty">La respuesta aparecerá aquí...</span>
         </div>
-
         <div style="margin-top:12px; display:flex; align-items:center; gap:8px;">
           <button class="btn-outline" style="margin-top:0; width:auto; padding:6px 16px; font-size:.78rem;"
             onclick="copyResponse()">📋 Copiar</button>
@@ -495,7 +674,6 @@
         </div>
       </div>
 
-      <!-- Usuario actual -->
       <div class="card" id="userCard" style="display:none;">
         <div class="card-title">
           <div class="dot" style="background:var(--green)"></div> Sesión Activa
@@ -506,10 +684,105 @@
     </div>
   </div>
 
-  <script>
-    let currentToken = null;
+  <!-- ── Módulos por rol ── -->
+  <div id="modulesSection" style="display:none;">
+    <div class="tabs-bar">
+      <span class="tabs-bar-label">Módulos:</span>
+      <div id="rolTabs" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+    </div>
+    <div id="moduleContent"></div>
+  </div>
 
-    // ── Helpers ──────────────────────────────────────────────
+  <!-- ── Modal: Olvidé mi contraseña ── -->
+  <div class="modal-overlay" id="modalOverlay" onclick="cerrarModalSiOverlay(event)">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+      <div style="font-size:28px; margin-bottom:12px;">🔑</div>
+      <div class="modal-title">Recuperar contraseña</div>
+      <p class="modal-sub">Ingresa el correo electrónico registrado. Si coincide, te enviaremos una contraseña temporal.
+      </p>
+
+      <label>Correo electrónico registrado</label>
+      <input id="recuperarCorreo" type="email" placeholder="ejemplo@empresa.com" />
+
+      <div id="recuperarStatus" class="status-bar status-idle" style="margin-top:14px;">
+        ⏳ Ingresa tu correo y presiona el botón
+      </div>
+
+      <button class="btn-primary" id="btnRecuperar" onclick="doOlvideMiContrasena()" style="margin-top:14px;">
+        📧 Enviar contraseña temporal
+      </button>
+      <button class="btn-outline" onclick="cerrarModal()" style="margin-top:8px;">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- ── Modal: Crear / Editar usuario ── -->
+  <div class="modal-overlay" id="modalUsuario" onclick="cerrarModalUsuarioSiOverlay(event)">
+    <div class="modal modal-lg" role="dialog" aria-modal="true">
+      <button class="modal-close" onclick="cerrarModalUsuario()">✕</button>
+      <div style="font-size:24px; margin-bottom:8px;" id="modalUsuarioIcon">👤</div>
+      <div class="modal-title" id="modalUsuarioTitulo">Nuevo Usuario</div>
+      <p class="modal-sub" id="modalUsuarioSub">Completa los campos para registrar un nuevo trabajador.</p>
+
+      <div class="form-grid-2">
+        <div>
+          <label>Cédula *</label>
+          <input id="uCedula" type="text" placeholder="1001234567" />
+        </div>
+        <div>
+          <label>Código Trabajador *</label>
+          <input id="uCodigo" type="text" placeholder="TRB-010" />
+        </div>
+        <div class="full">
+          <label>Nombre completo *</label>
+          <input id="uNombre" type="text" placeholder="Nombre Apellido" />
+        </div>
+        <div>
+          <label>Celular *</label>
+          <input id="uCelular" type="text" placeholder="3001234567" />
+        </div>
+        <div>
+          <label>Teléfono</label>
+          <input id="uTelefono" type="text" placeholder="6011234567" />
+        </div>
+        <div class="full">
+          <label>Correo electrónico *</label>
+          <input id="uCorreo" type="email" placeholder="usuario@empresa.com" />
+        </div>
+        <div class="full">
+          <label>Dirección *</label>
+          <input id="uDireccion" type="text" placeholder="Calle 10 #20-30, Bogotá" />
+        </div>
+        <div class="full" id="contrasenaGroup">
+          <label>Contraseña *</label>
+          <input id="uContrasena" type="password" placeholder="••••••••" />
+        </div>
+      </div>
+
+      <label style="margin-top:16px;">Roles</label>
+      <div id="rolesCheckboxes" class="checkbox-group"></div>
+
+      <div id="modalUsuarioStatus" class="status-bar status-idle" style="margin-top:16px;">
+        ⏳ Completa los campos requeridos
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:4px;">
+        <button class="btn-primary" style="margin-top:0" onclick="guardarUsuario()">💾 Guardar</button>
+        <button class="btn-outline" style="margin-top:0" onclick="cerrarModalUsuario()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const url = 'http://localhost:3000';
+
+    let currentToken = null;
+    let currentUsuario = null;
+    let rolesDisponibles = [];
+    let usuariosData = [];
+    let editandoCedula = null;
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
     function setStatus(id, type, msg) {
       const el = document.getElementById(id);
       el.className = 'status-bar status-' + type;
@@ -517,24 +790,19 @@
     }
 
     function showResponse(data, status, ms) {
-      const box = document.getElementById('responseBox');
-      const badge = document.getElementById('responseBadge');
-      const bar = document.getElementById('statusBar');
-      const time = document.getElementById('responseTime');
-
       const isOk = status >= 200 && status < 300;
+      const bar = document.getElementById('statusBar');
       bar.className = 'status-bar ' + (isOk ? 'status-ok' : 'status-error');
       bar.innerHTML = isOk ? `✅ ${status} OK` : `❌ ${status} Error`;
-      badge.innerHTML = `<span class="badge ${isOk ? 'badge-green' : 'badge-red'}">${status}</span>`;
-      time.textContent = `${ms}ms`;
-
-      box.innerHTML = syntaxHighlight(JSON.stringify(data, null, 2));
+      document.getElementById('responseBadge').innerHTML = `<span class="badge ${isOk ? 'badge-green' : 'badge-red'}">${status}</span>`;
+      document.getElementById('responseTime').textContent = `${ms}ms`;
+      document.getElementById('responseBox').innerHTML = syntaxHighlight(JSON.stringify(data, null, 2));
     }
 
     function syntaxHighlight(json) {
       return json
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (m) => {
+        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
           let cls = 'json-num';
           if (/^"/.test(m)) cls = /:$/.test(m) ? 'json-key' : 'json-str';
           else if (/true|false/.test(m)) cls = 'json-bool';
@@ -544,38 +812,47 @@
 
     function setToken(token, usuario) {
       currentToken = token;
+      currentUsuario = usuario;
       document.getElementById('tokenBox').innerHTML = token;
       document.getElementById('tokenBadge').innerHTML = '🟢 Sesión activa';
       document.getElementById('tokenBadge').className = 'badge badge-green';
 
-      const roles = (usuario.roles || []).join(', ') || 'Sin rol';
       document.getElementById('userCard').style.display = 'block';
       document.getElementById('userInfo').innerHTML = `
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; font-size:.82rem;">
-        <div><span style="color:var(--muted)">Nombre</span><br><strong>${usuario.nombre}</strong></div>
-        <div><span style="color:var(--muted)">Cédula</span><br><strong>${usuario.cedula}</strong></div>
-        <div><span style="color:var(--muted)">Correo</span><br><strong>${usuario.correo || '—'}</strong></div>
-        <div><span style="color:var(--muted)">Contrato</span><br><strong>${usuario.tipoContrato || '—'}</strong></div>
-        <div style="grid-column:1/-1"><span style="color:var(--muted)">Roles</span><br>
-          ${(usuario.roles || []).map(r => `<span class="badge badge-purple" style="margin:2px">${r}</span>`).join('')}
-        </div>
-      </div>`;
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; font-size:.82rem;">
+          <div><span style="color:var(--muted)">Nombre</span><br><strong>${usuario.nombre}</strong></div>
+          <div><span style="color:var(--muted)">Cédula</span><br><strong>${usuario.cedula}</strong></div>
+          <div><span style="color:var(--muted)">Correo</span><br><strong>${usuario.correo || '—'}</strong></div>
+          <div><span style="color:var(--muted)">Código</span><br><strong>${usuario.codigoTrabajador || '—'}</strong></div>
+          <div style="grid-column:1/-1"><span style="color:var(--muted)">Roles</span><br>
+            ${(usuario.roles || []).map(r => `<span class="badge badge-purple" style="margin:2px">${r}</span>`).join('')}
+          </div>
+        </div>`;
+
+      // Mostrar módulos según roles
+      const roles = usuario.roles || [];
+      if (roles.length > 0) {
+        document.getElementById('modulesSection').style.display = 'block';
+        construirTabs(roles);
+      }
     }
 
     function clearToken() {
       currentToken = null;
+      currentUsuario = null;
+      usuariosData = [];
+      rolesDisponibles = [];
       document.getElementById('tokenBox').innerHTML = '<span class="token-none">Sin token — inicia sesión primero</span>';
       document.getElementById('tokenBadge').innerHTML = 'Sin sesión';
       document.getElementById('tokenBadge').className = 'badge badge-purple';
       document.getElementById('userCard').style.display = 'none';
+      document.getElementById('modulesSection').style.display = 'none';
+      document.getElementById('moduleContent').innerHTML = '';
+      document.getElementById('rolTabs').innerHTML = '';
       setStatus('loginStatus', 'idle', '⏳ Ingresa tus credenciales y haz clic en Ingresar');
     }
 
-    function copyResponse() {
-      const text = document.getElementById('responseBox').innerText;
-      navigator.clipboard.writeText(text).then(() => alert('Respuesta copiada ✅'));
-    }
-
+    function copyResponse() { navigator.clipboard.writeText(document.getElementById('responseBox').innerText).then(() => alert('Respuesta copiada ✅')); }
     function clearResponse() {
       document.getElementById('responseBox').innerHTML = '<span class="response-empty">La respuesta aparecerá aquí...</span>';
       document.getElementById('statusBar').className = 'status-bar status-idle';
@@ -583,9 +860,8 @@
       document.getElementById('responseBadge').innerHTML = '';
       document.getElementById('responseTime').textContent = '';
     }
-    const url = 'http://localhost:3000';
-    // ── Actions ──────────────────────────────────────────────
 
+    // ── Acciones de autenticación ─────────────────────────────────────────────
     async function doLogin() {
       const cedula = document.getElementById('loginCedula').value.trim();
       const contrasena = document.getElementById('loginContrasena').value;
@@ -593,24 +869,20 @@
 
       setStatus('loginStatus', 'loading', '<span class="spinner"></span> Autenticando...');
       const t0 = Date.now();
-
       try {
         const r = await fetch(`${url}/api/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ cedula, contrasena })
         });
         const data = await r.json();
-        const ms = Date.now() - t0;
-        showResponse(data, r.status, ms);
-
+        showResponse(data, r.status, Date.now() - t0);
         if (r.ok) {
           setToken(data.token, data.usuario);
           setStatus('loginStatus', 'ok', `✅ Sesión iniciada como <strong>${data.usuario.nombre}</strong>`);
         } else {
           setStatus('loginStatus', 'error', '❌ ' + (data.error || 'Credenciales inválidas'));
         }
-      } catch (e) {
+      } catch {
         setStatus('loginStatus', 'error', '❌ No se pudo conectar con el servidor');
       }
     }
@@ -619,41 +891,324 @@
       const t0 = Date.now();
       const headers = {};
       if (withToken && currentToken) headers['Authorization'] = 'Bearer ' + currentToken;
-
       try {
-        const r = await fetch('/api/protegido', { headers });
-        const data = await r.json();
-        showResponse(data, r.status, Date.now() - t0);
-      } catch (e) {
+        const r = await fetch(`${url}/api/protegido`, { headers });
+        showResponse(await r.json(), r.status, Date.now() - t0);
+      } catch {
         document.getElementById('responseBox').innerHTML = '<span style="color:var(--red)">❌ Error de conexión</span>';
       }
     }
 
-    async function doCrear() {
-      if (!currentToken) { setStatus('crearStatus', 'error', '❌ Inicia sesión primero'); return; }
-      let body;
-      try { body = JSON.parse(document.getElementById('crearBody').value); }
-      catch { setStatus('crearStatus', 'error', '❌ JSON inválido'); return; }
+    document.getElementById('loginContrasena').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
-      setStatus('crearStatus', 'loading', '<span class="spinner"></span> Creando trabajador...');
-      const t0 = Date.now();
+    // ── Modal: Olvidé mi contraseña ───────────────────────────────────────────
+    function abrirModal() {
+      document.getElementById('modalOverlay').classList.add('open');
+      document.getElementById('recuperarCorreo').value = '';
+      setStatus('recuperarStatus', 'idle', '⏳ Ingresa tu correo y presiona el botón');
+      document.getElementById('btnRecuperar').disabled = false;
+      setTimeout(() => document.getElementById('recuperarCorreo').focus(), 80);
+    }
+    function cerrarModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+    function cerrarModalSiOverlay(e) { if (e.target === document.getElementById('modalOverlay')) cerrarModal(); }
+
+    document.getElementById('recuperarCorreo').addEventListener('keydown', e => { if (e.key === 'Enter') doOlvideMiContrasena(); });
+
+    async function doOlvideMiContrasena() {
+      const correo = document.getElementById('recuperarCorreo').value.trim();
+      if (!correo || !correo.includes('@')) { setStatus('recuperarStatus', 'error', '❌ Ingresa un correo válido'); return; }
+
+      const btn = document.getElementById('btnRecuperar');
+      btn.disabled = true;
+      setStatus('recuperarStatus', 'loading', '<span class="spinner"></span> Enviando correo...');
       try {
-        const r = await fetch('/api/trabajador', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
-          body: JSON.stringify(body)
+        const r = await fetch(`${url}/api/auth/olvide-contrasena`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ correo })
         });
         const data = await r.json();
-        showResponse(data, r.status, Date.now() - t0);
-        if (r.ok) setStatus('crearStatus', 'ok', '✅ Trabajador creado correctamente');
-        else setStatus('crearStatus', 'error', '❌ ' + (data.error || 'Error al crear'));
-      } catch { setStatus('crearStatus', 'error', '❌ Error de conexión'); }
+        showResponse(data, r.status, 0);
+        if (r.ok && !data.error) {
+          setStatus('recuperarStatus', 'ok', '✅ Si el correo existe, recibirás la contraseña temporal.');
+        } else {
+          setStatus('recuperarStatus', 'error', '❌ ' + (data.error || 'Error al procesar'));
+          btn.disabled = false;
+        }
+      } catch {
+        setStatus('recuperarStatus', 'error', '❌ No se pudo conectar con el servidor');
+        btn.disabled = false;
+      }
     }
 
-    // Enter key en login
-    document.getElementById('loginContrasena').addEventListener('keydown', e => {
-      if (e.key === 'Enter') doLogin();
-    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarModal(); cerrarModalUsuario(); } });
+
+    // ── Módulos por rol ───────────────────────────────────────────────────────
+    const MODULOS = {
+      'Director': renderModuloDireccion,
+    };
+
+    function construirTabs(roles) {
+      const container = document.getElementById('rolTabs');
+      container.innerHTML = '';
+      roles.forEach((rol, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn' + (i === 0 ? ' active' : '');
+        btn.textContent = rol;
+        btn.dataset.rol = rol;
+        btn.onclick = () => seleccionarTab(rol, btn);
+        container.appendChild(btn);
+      });
+      // Activar el primer tab
+      if (roles.length > 0) seleccionarTab(roles[0], container.querySelector('.tab-btn'));
+    }
+
+    function seleccionarTab(rol, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const content = document.getElementById('moduleContent');
+      if (MODULOS[rol]) {
+        MODULOS[rol](content);
+      } else {
+        content.innerHTML = `
+          <div class="card" style="text-align:center; padding:40px;">
+            <div style="font-size:2rem; margin-bottom:12px;">🚧</div>
+            <div style="font-size:1rem; font-weight:600; margin-bottom:8px;">Módulo: ${rol}</div>
+            <p style="color:var(--muted); font-size:.85rem;">Este módulo está en construcción.</p>
+          </div>`;
+      }
+    }
+
+    // ── Módulo Dirección: Gestión de Usuarios ─────────────────────────────────
+    function renderModuloDireccion(container) {
+      container.innerHTML = `
+        <div class="card" style="max-width:100%;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+            <div class="card-title" style="margin-bottom:0;">
+              <div class="dot" style="background:var(--green)"></div>
+              Gestión de Usuarios — Trabajadores
+            </div>
+            <button class="btn-success action-btn" onclick="abrirModalCrear()" style="padding:8px 20px !important; font-size:.85rem !important;">
+              ➕ Nuevo Usuario
+            </button>
+          </div>
+          <div id="tablaStatus" class="status-bar status-loading" style="margin-bottom:16px;">
+            <span class="spinner"></span> Cargando trabajadores...
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="tabla-usuarios" id="tablaUsuarios" style="display:none;">
+              <thead>
+                <tr>
+                  <th>Cédula</th>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Celular</th>
+                  <th>Correo</th>
+                  <th>Roles</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaBody"></tbody>
+            </table>
+          </div>
+          <p id="tablaVacia" style="color:var(--muted); font-size:.85rem; padding:16px 0; display:none;">
+            No hay trabajadores registrados.
+          </p>
+        </div>`;
+      cargarUsuarios();
+    }
+
+    async function cargarUsuarios() {
+      try {
+        const r = await fetch(`${url}/api/Usuario`, {
+          headers: { 'Authorization': 'Bearer ' + currentToken }
+        });
+        const data = await r.json();
+
+        const statusEl = document.getElementById('tablaStatus');
+        if (!statusEl) return;
+
+        if (!r.ok) {
+          statusEl.className = 'status-bar status-error';
+          statusEl.innerHTML = '❌ ' + (data.error || 'Error al cargar los usuarios');
+          return;
+        }
+
+        usuariosData = data;
+        statusEl.style.display = 'none';
+        renderTabla(data);
+      } catch {
+        const statusEl = document.getElementById('tablaStatus');
+        if (statusEl) { statusEl.className = 'status-bar status-error'; statusEl.innerHTML = '❌ Error de conexión'; }
+      }
+    }
+
+    function renderTabla(usuarios) {
+      const tabla = document.getElementById('tablaUsuarios');
+      const vacia = document.getElementById('tablaVacia');
+      const body = document.getElementById('tablaBody');
+      if (!tabla) return;
+
+      if (!usuarios.length) {
+        tabla.style.display = 'none';
+        vacia.style.display = 'block';
+        return;
+      }
+
+      tabla.style.display = 'table';
+      vacia.style.display = 'none';
+
+      body.innerHTML = usuarios.map(u => `
+        <tr>
+          <td><span style="font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--muted)">${u.cedula}</span></td>
+          <td><span style="font-size:.78rem; color:var(--muted)">${u.codigoTrabajador}</span></td>
+          <td><strong>${u.nombre}</strong></td>
+          <td>${u.celular}</td>
+          <td style="font-size:.8rem;">${u.correo}</td>
+          <td>${(u.roles || []).map(r => `<span class="badge badge-purple" style="margin:2px; font-size:.65rem;">${r.nombre}</span>`).join('') || '<span style="color:var(--muted);font-size:.78rem">Sin rol</span>'}</td>
+          <td><span class="badge ${u.activo ? 'badge-green' : 'badge-red'}">${u.activo ? 'Activo' : 'Inactivo'}</span></td>
+          <td>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="btn-outline action-btn" onclick="abrirModalEditar('${u.cedula}')">✏️ Editar</button>
+              <button class="${u.activo ? 'btn-danger' : 'btn-success'} action-btn" onclick="toggleEstado('${u.cedula}', ${!u.activo})">
+                ${u.activo ? '🚫 Eliminar' : '✅ Activar'}
+              </button>
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+
+    async function toggleEstado(cedula, nuevoEstado) {
+      try {
+        const r = await fetch(`${url}/api/Usuario/${cedula}/estado`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+          body: JSON.stringify({ activo: nuevoEstado })
+        });
+        if (r.ok) {
+          await cargarUsuarios();
+        } else {
+          const data = await r.json();
+          alert('Error: ' + (data.error || 'No se pudo cambiar el estado'));
+        }
+      } catch { alert('Error de conexión'); }
+    }
+
+    // ── Modal: Crear / Editar usuario ─────────────────────────────────────────
+    async function abrirModalCrear() {
+      editandoCedula = null;
+      document.getElementById('modalUsuarioIcon').textContent = '👤';
+      document.getElementById('modalUsuarioTitulo').textContent = 'Nuevo Usuario';
+      document.getElementById('modalUsuarioSub').textContent = 'Completa los campos para registrar un nuevo trabajador.';
+      document.getElementById('uCedula').disabled = false;
+      ['uCedula', 'uCodigo', 'uNombre', 'uCelular', 'uTelefono', 'uCorreo', 'uDireccion', 'uContrasena'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('contrasenaGroup').style.display = 'block';
+      setStatus('modalUsuarioStatus', 'idle', '⏳ Completa los campos requeridos');
+      await cargarRolesCheckboxes([]);
+      document.getElementById('modalUsuario').classList.add('open');
+      setTimeout(() => document.getElementById('uCedula').focus(), 80);
+    }
+
+    async function abrirModalEditar(cedula) {
+      const u = usuariosData.find(x => x.cedula === cedula);
+      if (!u) return;
+
+      editandoCedula = cedula;
+      document.getElementById('modalUsuarioIcon').textContent = '✏️';
+      document.getElementById('modalUsuarioTitulo').textContent = 'Editar Usuario';
+      document.getElementById('modalUsuarioSub').textContent = `Modificando datos de ${u.nombre}`;
+      document.getElementById('uCedula').value = cedula;
+      document.getElementById('uCedula').disabled = true;
+      document.getElementById('uCodigo').value = u.codigoTrabajador;
+      document.getElementById('uNombre').value = u.nombre;
+      document.getElementById('uCelular').value = u.celular;
+      document.getElementById('uTelefono').value = u.telefono || '';
+      document.getElementById('uCorreo').value = u.correo;
+      document.getElementById('uDireccion').value = u.direccion;
+      document.getElementById('contrasenaGroup').style.display = 'none';
+      setStatus('modalUsuarioStatus', 'idle', '⏳ Modifica los campos necesarios');
+
+      const rolesSeleccionados = (u.roles || []).map(r => r.id);
+      await cargarRolesCheckboxes(rolesSeleccionados);
+      document.getElementById('modalUsuario').classList.add('open');
+    }
+
+    async function cargarRolesCheckboxes(selectedIds) {
+      if (!rolesDisponibles.length) {
+        try {
+          const r = await fetch(`${url}/api/Usuario/roles`, {
+            headers: { 'Authorization': 'Bearer ' + currentToken }
+          });
+          rolesDisponibles = r.ok ? await r.json() : [];
+        } catch { rolesDisponibles = []; }
+      }
+
+      document.getElementById('rolesCheckboxes').innerHTML = rolesDisponibles.map(rol => `
+        <label class="checkbox-label">
+          <input type="checkbox" value="${rol.id}" ${selectedIds.includes(rol.id) ? 'checked' : ''} />
+          ${rol.nombre}
+        </label>`).join('');
+    }
+
+    function cerrarModalUsuario() { document.getElementById('modalUsuario').classList.remove('open'); }
+    function cerrarModalUsuarioSiOverlay(e) { if (e.target === document.getElementById('modalUsuario')) cerrarModalUsuario(); }
+
+    function getRolesSeleccionados() {
+      return [...document.querySelectorAll('#rolesCheckboxes input[type=checkbox]:checked')].map(cb => parseInt(cb.value));
+    }
+
+    async function guardarUsuario() {
+      const datos = {
+        Cedula: document.getElementById('uCedula').value.trim(),
+        CodigoTrabajador: document.getElementById('uCodigo').value.trim(),
+        Nombre: document.getElementById('uNombre').value.trim(),
+        Celular: document.getElementById('uCelular').value.trim(),
+        Telefono: document.getElementById('uTelefono').value.trim() || null,
+        CorreoElectronico: document.getElementById('uCorreo').value.trim(),
+        Direccion: document.getElementById('uDireccion').value.trim(),
+      };
+      const roles = getRolesSeleccionados();
+
+      const requeridos = ['Cedula', 'CodigoTrabajador', 'Nombre', 'Celular', 'CorreoElectronico', 'Direccion'];
+      if (requeridos.some(k => !datos[k])) {
+        setStatus('modalUsuarioStatus', 'error', '❌ Completa todos los campos obligatorios (*)');
+        return;
+      }
+
+      setStatus('modalUsuarioStatus', 'loading', '<span class="spinner"></span> Guardando...');
+
+      try {
+        let r;
+        if (editandoCedula === null) {
+          const contrasena = document.getElementById('uContrasena').value;
+          if (!contrasena) { setStatus('modalUsuarioStatus', 'error', '❌ La contraseña es requerida'); return; }
+          datos.Contrasena = contrasena;
+          r = await fetch(`${url}/api/Usuario`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+            body: JSON.stringify({ ...datos, roles })
+          });
+        } else {
+          r = await fetch(`${url}/api/Usuario/${editandoCedula}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentToken },
+            body: JSON.stringify({ ...datos, roles })
+          });
+        }
+
+        const data = await r.json();
+        if (r.ok) {
+          setStatus('modalUsuarioStatus', 'ok', '✅ ' + (data.mensaje || 'Guardado correctamente'));
+          setTimeout(async () => { cerrarModalUsuario(); await cargarUsuarios(); }, 800);
+        } else {
+          setStatus('modalUsuarioStatus', 'error', '❌ ' + (data.error || 'Error al guardar'));
+        }
+      } catch {
+        setStatus('modalUsuarioStatus', 'error', '❌ Error de conexión');
+      }
+    }
   </script>
 </body>
 
