@@ -1628,7 +1628,7 @@
         setStatus('modalStatus', 'ok', '✅ ' + (data.mensaje || 'Guardado correctamente'));
         setTimeout(async () => { cerrarModalUsuario(); await cargarUsuarios(); }, 700);
       } else {
-        setStatus('modalStatus', 'error', '❌ ' + (data.error || 'Paila al guardar'));
+        setStatus('modalStatus', 'error', '❌ ' + (data.error || 'Error al guardar'));
       }
     }
   </script>
