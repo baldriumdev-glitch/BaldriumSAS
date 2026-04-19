@@ -20,8 +20,12 @@ async function login(cedula, contrasena) {
 
     const { trabajador, roles } = resultado;
 
-    // 2. Verificar contraseña con bcrypt
-    //    La BD debe tener hashes bcrypt (ejecutar hashearContrasenas.js si no)
+    // 2. Verificar que el trabajador esté activo
+    if (!trabajador.Activo) {
+        throw new Error('Tu cuenta está desactivada. Contacta a tu administrador.');
+    }
+
+    // 3. Verificar contraseña con bcrypt
     const contrasenaValida = await bcrypt.compare(contrasena, trabajador.Contrasena);
     if (!contrasenaValida) {
         throw new Error('Credenciales inválidas');

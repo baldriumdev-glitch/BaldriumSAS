@@ -1,36 +1,51 @@
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
 const authServicio = require('../servicios/Login/authServicio');
 const { olvideMiContrasena } = require('../servicios/Login/recuperacionServicio');
+const auditoria = require('../db/auditoriaRepositorio');
 
-/**
- * POST /api/auth/login
- * Body: { cedula, contrasena }
- * Respuesta: { token, usuario }
- */
+// POST /api/auth/login
 router.post('/login', async (req, res) => {
     const { cedula, contrasena } = req.body;
+    const ip      = auditoria.extraerIP(req);
+    const device  = auditoria.extraerDispositivo(req);
 
-    // Validación básica de campos
     if (!cedula || !contrasena) {
         return res.status(400).json({ error: 'La cédula y la contraseña son requeridas.' });
     }
 
     try {
         const resultado = await authServicio.login(String(cedula).trim(), contrasena);
+
+        // Auditoría: LOGIN exitoso (fire-and-forget)
+        auditoria.registrarSistema({
+            cedulaTrabajador: resultado.usuario.cedula,
+            nombreTrabajador: resultado.usuario.nombre,
+            tipoAccion:       'LOGIN',
+            direccionIP:      ip,
+            dispositivo:      device,
+            resultado:        'EXITOSO',
+            descripcion:      'Inicio de sesión exitoso',
+        });
+
         return res.status(200).json(resultado);
     } catch (err) {
-        // Nunca revelar si la cédula existe o no
+        // Auditoría: LOGIN_FALLIDO (fire-and-forget)
+        auditoria.registrarSistema({
+            cedulaTrabajador: String(cedula).trim(),
+            nombreTrabajador: 'No identificado',
+            tipoAccion:       'LOGIN_FALLIDO',
+            direccionIP:      ip,
+            dispositivo:      device,
+            resultado:        'FALLIDO',
+            descripcion:      err.message || 'Credenciales inválidas',
+        });
+
         return res.status(401).json({ error: err.message || 'Credenciales inválidas' });
     }
 });
 
-/**
- * POST /api/auth/olvide-contrasena
- * Body: { correo }
- * Respuesta: { mensaje }
- * Genera una contraseña temporal, la guarda en BD y la envía al correo registrado.
- */
+// POST /api/auth/olvide-contrasena
 router.post('/olvide-contrasena', async (req, res) => {
     const { correo } = req.body;
 
@@ -42,7 +57,6 @@ router.post('/olvide-contrasena', async (req, res) => {
         const resultado = await olvideMiContrasena(correo);
         return res.status(200).json(resultado);
     } catch (err) {
-        // Respuesta genérica: no revelar si el correo existe o no
         return res.status(200).json({
             mensaje: err.message || 'Si el correo existe en el sistema, recibirás las instrucciones en breve.'
         });

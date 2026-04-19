@@ -18,6 +18,7 @@ async function buscarPorCedula(cedula) {
             t.CorreoElectronico,
             t.Direccion,
             t.CodigoTrabajador,
+            t.Activo,
             r.ID        AS rolId,
             r.TipoRol   AS tipoRol
         FROM trabajador t
@@ -30,7 +31,7 @@ async function buscarPorCedula(cedula) {
     if (!rows || rows.length === 0) return null;
 
     const { Cedula, Contrasena, Nombre, Celular, Telefono,
-            CorreoElectronico, Direccion, CodigoTrabajador } = rows[0];
+            CorreoElectronico, Direccion, CodigoTrabajador, Activo } = rows[0];
 
     const roles = rows
         .filter(row => row.tipoRol !== null)
@@ -38,7 +39,7 @@ async function buscarPorCedula(cedula) {
 
     return {
         trabajador: { Cedula, Contrasena, Nombre, Celular, Telefono,
-                      CorreoElectronico, Direccion, CodigoTrabajador },
+                      CorreoElectronico, Direccion, CodigoTrabajador, Activo },
         roles
     };
 }
@@ -96,6 +97,18 @@ async function existeCedula(cedula) {
 }
 
 /**
+ * Verifica si un correo ya está registrado (opcionalmente excluye una cédula, útil al editar).
+ */
+async function existeCorreo(correo, excluirCedula = null) {
+    const sql = excluirCedula
+        ? 'SELECT Cedula FROM trabajador WHERE CorreoElectronico = ? AND Cedula != ?'
+        : 'SELECT Cedula FROM trabajador WHERE CorreoElectronico = ?';
+    const params = excluirCedula ? [correo, excluirCedula] : [correo];
+    const [rows] = await pool.execute(sql, params);
+    return rows.length > 0;
+}
+
+/**
  * Busca un trabajador por correo electrónico.
  * @param {string} correo
  * @returns {Promise<Object|null>}
@@ -113,6 +126,19 @@ async function buscarPorCorreo(correo) {
     const [rows] = await pool.execute(sql, [correo]);
     if (!rows || rows.length === 0) return null;
     return rows[0];
+}
+
+/**
+ * Actualiza los datos de perfil de un trabajador (sin tocar cédula, código ni contraseña).
+ */
+async function actualizarPerfil(cedula, datos) {
+    const { Nombre, Celular, Telefono, CorreoElectronico, Direccion } = datos;
+    await pool.execute(
+        `UPDATE trabajador
+         SET Nombre=?, Celular=?, Telefono=?, CorreoElectronico=?, Direccion=?
+         WHERE Cedula=?`,
+        [Nombre, Celular, Telefono || null, CorreoElectronico, Direccion, cedula]
+    );
 }
 
 /**
@@ -216,6 +242,7 @@ async function listarRoles() {
 }
 
 module.exports = {
-    buscarPorCedula, crearTrabajador, existeCedula, buscarPorCorreo, actualizarContrasena,
+    buscarPorCedula, crearTrabajador, existeCedula, existeCorreo, buscarPorCorreo,
+    actualizarContrasena, actualizarPerfil,
     listarTodosConRoles, actualizarTrabajador, cambiarEstado, listarRoles
 };

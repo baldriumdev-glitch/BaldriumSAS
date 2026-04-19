@@ -5,9 +5,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BaldriumSAS — Panel</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --bg: #0d0f14;
@@ -47,10 +55,13 @@
     }
 
     .header-logo {
-      width: 36px; height: 36px;
+      width: 36px;
+      height: 36px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 17px;
       flex-shrink: 0;
     }
@@ -75,18 +86,32 @@
     }
 
     .user-avatar {
-      width: 34px; height: 34px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      display: flex; align-items: center; justify-content: center;
-      font-size: .75rem; font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      font-weight: 700;
       color: #fff;
       flex-shrink: 0;
     }
 
-    .user-meta { line-height: 1.35; }
-    .user-name  { font-size: .85rem; font-weight: 600; }
-    .user-roles { font-size: .72rem; color: var(--muted); }
+    .user-meta {
+      line-height: 1.35;
+    }
+
+    .user-name {
+      font-size: .85rem;
+      font-weight: 600;
+    }
+
+    .user-roles {
+      font-size: .72rem;
+      color: var(--muted);
+    }
 
     .btn-logout {
       padding: 7px 16px;
@@ -101,10 +126,16 @@
       transition: border-color .2s, color .2s;
       white-space: nowrap;
     }
-    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    .btn-logout:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
 
     /* ── Main content ── */
-    main { padding: 28px; }
+    main {
+      padding: 28px;
+    }
 
     /* ── Tabs de roles ── */
     .tabs-section {
@@ -139,12 +170,15 @@
       white-space: nowrap;
     }
 
-    .tab-btn:hover { color: var(--text); border-color: #3a3f56; }
+    .tab-btn:hover {
+      color: var(--text);
+      border-color: #3a3f56;
+    }
 
     .tab-btn.active {
       border-color: var(--accent);
       color: var(--accent2);
-      background: rgba(108,99,255,.08);
+      background: rgba(108, 99, 255, .08);
       font-weight: 600;
     }
 
@@ -176,10 +210,17 @@
       gap: 8px;
     }
 
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
 
     /* ── Tabla ── */
-    .tabla-wrap { overflow-x: auto; }
+    .tabla-wrap {
+      overflow-x: auto;
+    }
 
     table {
       width: 100%;
@@ -201,12 +242,17 @@
 
     td {
       padding: 13px 14px;
-      border-bottom: 1px solid rgba(42,47,66,.5);
+      border-bottom: 1px solid rgba(42, 47, 66, .5);
       vertical-align: middle;
     }
 
-    tr:last-child td { border-bottom: none; }
-    tbody tr:hover td { background: rgba(255,255,255,.018); }
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover td {
+      background: rgba(255, 255, 255, .018);
+    }
 
     /* ── Badges ── */
     .badge {
@@ -218,9 +264,21 @@
       font-size: .7rem;
       font-weight: 600;
     }
-    .badge-green  { background: rgba(34,197,94,.15);  color: var(--green); }
-    .badge-red    { background: rgba(239,68,68,.15);  color: var(--red); }
-    .badge-purple { background: rgba(108,99,255,.15); color: var(--accent2); }
+
+    .badge-green {
+      background: rgba(34, 197, 94, .15);
+      color: var(--green);
+    }
+
+    .badge-red {
+      background: rgba(239, 68, 68, .15);
+      color: var(--red);
+    }
+
+    .badge-purple {
+      background: rgba(108, 99, 255, .15);
+      color: var(--accent2);
+    }
 
     /* ── Botones de acción en tabla ── */
     .action-btn {
@@ -233,11 +291,28 @@
       transition: opacity .2s;
       border: none;
     }
-    .action-btn:hover { opacity: .82; }
 
-    .btn-edit    { background: rgba(108,99,255,.15); color: var(--accent2); border: 1px solid rgba(108,99,255,.25); }
-    .btn-delete  { background: rgba(239,68,68,.12);  color: var(--red);     border: 1px solid rgba(239,68,68,.2); }
-    .btn-restore { background: rgba(34,197,94,.12);  color: var(--green);   border: 1px solid rgba(34,197,94,.2); }
+    .action-btn:hover {
+      opacity: .82;
+    }
+
+    .btn-edit {
+      background: rgba(108, 99, 255, .15);
+      color: var(--accent2);
+      border: 1px solid rgba(108, 99, 255, .25);
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, .12);
+      color: var(--red);
+      border: 1px solid rgba(239, 68, 68, .2);
+    }
+
+    .btn-restore {
+      background: rgba(34, 197, 94, .12);
+      color: var(--green);
+      border: 1px solid rgba(34, 197, 94, .2);
+    }
 
     /* ── Botón nuevo usuario ── */
     .btn-add {
@@ -251,27 +326,59 @@
       font-weight: 600;
       cursor: pointer;
       transition: opacity .2s, transform .1s;
-      box-shadow: 0 3px 12px rgba(108,99,255,.2);
+      box-shadow: 0 3px 12px rgba(108, 99, 255, .2);
     }
-    .btn-add:hover  { opacity: .88; }
-    .btn-add:active { transform: scale(.98); }
+
+    .btn-add:hover {
+      opacity: .88;
+    }
+
+    .btn-add:active {
+      transform: scale(.98);
+    }
 
     /* ── Status bar ── */
     .status-bar {
-      display: flex; align-items: center; gap: 8px;
-      padding: 9px 13px; border-radius: 9px;
-      font-size: .8rem; font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border-radius: 9px;
+      font-size: .8rem;
+      font-weight: 500;
       margin-bottom: 16px;
     }
-    .status-idle    { background: rgba(100,116,139,.12); color: var(--muted); }
-    .status-ok      { background: rgba(34,197,94,.12);   color: var(--green); }
-    .status-error   { background: rgba(239,68,68,.12);   color: var(--red); }
-    .status-loading { background: rgba(108,99,255,.12);  color: var(--accent2); }
+
+    .status-idle {
+      background: rgba(100, 116, 139, .12);
+      color: var(--muted);
+    }
+
+    .status-ok {
+      background: rgba(34, 197, 94, .12);
+      color: var(--green);
+    }
+
+    .status-error {
+      background: rgba(239, 68, 68, .12);
+      color: var(--red);
+    }
+
+    .status-loading {
+      background: rgba(108, 99, 255, .12);
+      color: var(--accent2);
+    }
 
     /* ── Spinner ── */
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     .spinner {
-      width: 14px; height: 14px;
+      width: 14px;
+      height: 14px;
       border: 2px solid transparent;
       border-top-color: currentColor;
       border-radius: 50%;
@@ -281,16 +388,24 @@
 
     /* ── Modal ── */
     .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.65);
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .65);
       backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       z-index: 999;
-      opacity: 0; pointer-events: none;
+      opacity: 0;
+      pointer-events: none;
       transition: opacity .25s;
       padding: 24px;
     }
-    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
     .modal {
       background: var(--surface);
@@ -304,19 +419,43 @@
       max-height: 90vh;
       overflow-y: auto;
     }
-    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
 
     .modal-close {
       float: right;
-      background: none; border: none;
-      color: var(--muted); font-size: 1.1rem;
-      cursor: pointer; padding: 0;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0;
     }
-    .modal-close:hover { color: var(--text); }
 
-    .modal-icon  { font-size: 24px; margin-bottom: 10px; display: block; }
-    .modal-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 5px; }
-    .modal-sub   { font-size: .82rem; color: var(--muted); margin-bottom: 22px; line-height: 1.5; }
+    .modal-close:hover {
+      color: var(--text);
+    }
+
+    .modal-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .modal-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .modal-sub {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
 
     label {
       font-size: .81rem;
@@ -339,59 +478,344 @@
       transition: border-color .2s;
       outline: none;
     }
-    input:focus   { border-color: var(--accent); }
-    input:disabled { opacity: .45; cursor: not-allowed; }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    input:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
 
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0 18px;
     }
-    .form-grid .full { grid-column: 1 / -1; }
 
-    .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
 
     .checkbox-label {
-      display: flex; align-items: center; gap: 7px;
-      font-size: .82rem; color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: .82rem;
+      color: var(--text);
       cursor: pointer;
       padding: 7px 13px;
       border: 1px solid var(--border);
       border-radius: 8px;
       transition: border-color .2s;
     }
-    .checkbox-label:hover { border-color: var(--accent); }
-    .checkbox-label input[type=checkbox] { width: auto; accent-color: var(--accent); }
 
-    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .checkbox-label:hover {
+      border-color: var(--accent);
+    }
+
+    .checkbox-label input[type=checkbox] {
+      width: auto;
+      accent-color: var(--accent);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
 
     .btn-save {
-      flex: 1; padding: 11px;
+      flex: 1;
+      padding: 11px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; border: none; border-radius: 8px;
-      font-family: inherit; font-size: .9rem; font-weight: 600;
-      cursor: pointer; transition: opacity .2s;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s;
     }
-    .btn-save:hover { opacity: .88; }
+
+    .btn-save:hover {
+      opacity: .88;
+    }
 
     .btn-cancel {
       padding: 11px 20px;
       background: transparent;
       border: 1px solid var(--border);
-      color: var(--text); border-radius: 8px;
-      font-family: inherit; font-size: .88rem;
-      cursor: pointer; transition: opacity .2s;
+      color: var(--text);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .88rem;
+      cursor: pointer;
+      transition: opacity .2s;
     }
-    .btn-cancel:hover { opacity: .75; }
+
+    .btn-cancel:hover {
+      opacity: .75;
+    }
 
     /* ── Construcción placeholder ── */
     .wip-card {
       text-align: center;
       padding: 60px 24px;
     }
-    .wip-icon  { font-size: 2.8rem; margin-bottom: 14px; }
-    .wip-title { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
-    .wip-sub   { font-size: .85rem; color: var(--muted); }
+
+    .wip-icon {
+      font-size: 2.8rem;
+      margin-bottom: 14px;
+    }
+
+    .wip-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .wip-sub {
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    /* ── Sub-tabs dentro de módulo ── */
+    .sub-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sub-tab-btn {
+      padding: 9px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: .84rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color .2s, border-color .2s;
+      margin-bottom: -1px;
+    }
+
+    .sub-tab-btn:hover { color: var(--text); }
+
+    .sub-tab-btn.active {
+      color: var(--accent2);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ── Badges extra ── */
+    .badge-yellow {
+      background: rgba(245, 158, 11, .15);
+      color: var(--yellow);
+    }
+
+    .badge-orange {
+      background: rgba(249, 115, 22, .15);
+      color: #f97316;
+    }
+
+    /* ── Search dentro de card ── */
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-wrap input {
+      padding-left: 32px;
+      width: 240px;
+      height: 36px;
+      font-size: .83rem;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: .8rem;
+      pointer-events: none;
+    }
+
+    /* ── Perfil ── */
+    .btn-profile {
+      padding: 7px 16px;
+      background: rgba(108, 99, 255, .1);
+      border: 1px solid rgba(108, 99, 255, .3);
+      border-radius: 8px;
+      color: var(--accent2);
+      font-family: inherit;
+      font-size: .82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+      white-space: nowrap;
+    }
+
+    .btn-profile:hover {
+      background: rgba(108, 99, 255, .18);
+      border-color: var(--accent);
+    }
+
+    .btn-profile.active {
+      background: rgba(108, 99, 255, .22);
+      border-color: var(--accent);
+    }
+
+    .profile-section {
+      max-width: 760px;
+    }
+
+    .profile-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .profile-avatar-lg {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(108, 99, 255, .3);
+    }
+
+    .profile-hero-meta {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .profile-hero-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .profile-hero-sub {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .readonly-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .readonly-field {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .readonly-field .rf-label {
+      font-size: .68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .readonly-field .rf-value {
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .profile-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: .72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: .84rem;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: color .2s, border-color .2s;
+    }
+
+    .btn-back:hover {
+      color: var(--text);
+      border-color: #3a3f56;
+    }
+
+    .btn-guardar-perfil {
+      margin-top: 18px;
+      padding: 11px 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+
+    .btn-guardar-perfil:hover {
+      opacity: .88;
+    }
+
+    .btn-guardar-perfil:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 
@@ -407,25 +831,132 @@
     <div class="header-user">
       <div class="user-avatar" id="userAvatar">--</div>
       <div class="user-meta">
-        <div class="user-name"  id="userName">Cargando...</div>
+        <div class="user-name" id="userName">Cargando...</div>
         <div class="user-roles" id="userRolesText"></div>
       </div>
+      <button class="btn-profile" id="btnPerfil" onclick="irAPerfil()">👤 Mi Perfil</button>
       <button class="btn-logout" onclick="cerrarSesion()">↩ Salir</button>
     </div>
   </header>
 
   <!-- ── Contenido ── -->
   <main>
-    <div class="tabs-section">
-      <span class="tabs-label">Módulos</span>
-      <div id="rolTabs" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+
+    <!-- Vista: Módulos (tabs) -->
+    <div id="tabsSection">
+      <div class="tabs-section">
+        <span class="tabs-label">Módulos</span>
+        <div id="rolTabs" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+      </div>
+      <div id="moduleContent">
+        <div class="card wip-card">
+          <div class="wip-icon">⚡</div>
+          <div class="wip-title">Cargando módulos...</div>
+        </div>
+      </div>
     </div>
 
-    <div id="moduleContent">
-      <div class="card wip-card">
-        <div class="wip-icon">⚡</div>
-        <div class="wip-title">Cargando módulos...</div>
+    <!-- Vista: Perfil (oculta por defecto) -->
+    <div id="profileSection" style="display:none;" class="profile-section">
+
+      <button class="btn-back" onclick="volverAlPanel()">← Volver al panel</button>
+
+      <!-- Hero: info de solo lectura -->
+      <div class="profile-hero" id="profileHero">
+        <div class="profile-avatar-lg" id="profileAvatar">--</div>
+        <div class="profile-hero-meta">
+          <div class="profile-hero-name" id="profileNombre">—</div>
+          <div class="profile-hero-sub">Trabajador activo</div>
+          <div id="profileRolesBadges"></div>
+        </div>
       </div>
+
+      <div class="readonly-grid" style="margin-bottom:20px;" id="profileReadonlyGrid">
+        <div class="readonly-field">
+          <div class="rf-label">Cédula</div>
+          <div class="rf-value" id="profileCedula">—</div>
+        </div>
+        <div class="readonly-field">
+          <div class="rf-label">Código Trabajador</div>
+          <div class="rf-value" id="profileCodigo">—</div>
+        </div>
+      </div>
+
+      <!-- Editar información personal -->
+      <div class="profile-card">
+        <div class="section-title">
+          <div class="dot"></div> Editar información personal
+        </div>
+
+        <div class="form-grid">
+          <div class="full">
+            <label>Nombre completo *</label>
+            <input id="pNombre" type="text" placeholder="Nombre Apellido" />
+          </div>
+          <div>
+            <label>Celular *</label>
+            <input id="pCelular" type="text" placeholder="3001234567" />
+          </div>
+          <div>
+            <label>Teléfono</label>
+            <input id="pTelefono" type="text" placeholder="6011234567" />
+          </div>
+          <div class="full">
+            <label>Correo electrónico *</label>
+            <input id="pCorreo" type="email" placeholder="usuario@empresa.com" />
+          </div>
+          <div class="full">
+            <label>Dirección *</label>
+            <input id="pDireccion" type="text" placeholder="Calle 10 #20-30, Bogotá" />
+          </div>
+        </div>
+
+        <div id="perfilInfoStatus" class="status-bar status-idle" style="margin-top:16px; margin-bottom:0;">
+          ⏳ Modifica los campos y guarda los cambios
+        </div>
+
+        <button class="btn-guardar-perfil" id="btnGuardarInfo" onclick="guardarInfoPerfil()">
+          💾 Guardar cambios
+        </button>
+      </div>
+
+      <!-- Cambiar contraseña -->
+      <div class="profile-card">
+        <div class="section-title">
+          <div class="dot" style="background:var(--yellow)"></div> Cambiar contraseña
+        </div>
+        <p style="font-size:.82rem; color:var(--muted); margin-bottom:4px;">
+          Ingresa tu contraseña actual (o la temporal que recibiste por correo) para poder establecer una nueva.
+        </p>
+
+        <div class="form-grid">
+          <div class="full">
+            <label>Contraseña actual *</label>
+            <input id="pContrasenaActual" type="password" placeholder="Tu contraseña actual o temporal"
+              autocomplete="current-password" />
+          </div>
+          <div>
+            <label>Nueva contraseña *</label>
+            <input id="pNuevaContrasena" type="password" placeholder="Mínimo 6 caracteres"
+              autocomplete="new-password" />
+          </div>
+          <div>
+            <label>Confirmar nueva contraseña *</label>
+            <input id="pConfirmarContrasena" type="password" placeholder="Repite la nueva contraseña"
+              autocomplete="new-password" />
+          </div>
+        </div>
+
+        <div id="perfilPassStatus" class="status-bar status-idle" style="margin-top:16px; margin-bottom:0;">
+          ⏳ Completa los tres campos para cambiar tu contraseña
+        </div>
+
+        <button class="btn-guardar-perfil" id="btnCambiarPass" onclick="cambiarContrasena()"
+          style="background:linear-gradient(135deg,#b45309,#f59e0b);">
+          🔑 Cambiar contraseña
+        </button>
+      </div>
+
     </div>
   </main>
 
@@ -490,7 +1021,7 @@
     const API = 'http://localhost:3000';
 
     // ── Sesión ───────────────────────────────────────────────────────────────
-    const token  = localStorage.getItem('baldrium_token');
+    const token = localStorage.getItem('baldrium_token');
     const usuario = JSON.parse(localStorage.getItem('baldrium_user') || 'null');
 
     if (!token || !usuario) {
@@ -532,8 +1063,8 @@
     }
 
     (function renderHeader() {
-      document.getElementById('userAvatar').textContent   = iniciales(usuario.nombre);
-      document.getElementById('userName').textContent     = usuario.nombre;
+      document.getElementById('userAvatar').textContent = iniciales(usuario.nombre);
+      document.getElementById('userName').textContent = usuario.nombre;
       document.getElementById('userRolesText').textContent = (usuario.roles || []).join(' · ');
     })();
 
@@ -547,7 +1078,7 @@
       container.innerHTML = '';
       roles.forEach((rol, i) => {
         const btn = document.createElement('button');
-        btn.className  = 'tab-btn' + (i === 0 ? ' active' : '');
+        btn.className = 'tab-btn' + (i === 0 ? ' active' : '');
         btn.textContent = rol;
         btn.onclick = () => seleccionarTab(rol, btn);
         container.appendChild(btn);
@@ -577,48 +1108,208 @@
 
     construirTabs(usuario.roles || []);
 
-    // ── Módulo Director — Gestión de Usuarios ─────────────────────────────────
-    let usuariosData    = [];
+    // ── Módulo Director — Gestión de Usuarios y Auditoría ────────────────────
+    let usuariosData = [];
+    let auditoriaData = [];
     let rolesDisponibles = [];
-    let editandoCedula  = null;
+    let editandoCedula = null;
 
     function renderModuloDirector(container) {
       container.innerHTML = `
         <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <div class="dot" style="background:var(--green)"></div>
-              Gestión de Usuarios — Trabajadores
+          <div class="sub-tabs">
+            <button class="sub-tab-btn active" id="subTabUsuariosBtn"
+              onclick="seleccionarSubTab('usuarios', this)">👥 Usuarios</button>
+            <button class="sub-tab-btn" id="subTabAuditoriaBtn"
+              onclick="seleccionarSubTab('auditoria', this)">🔍 Auditoría Sistema</button>
+          </div>
+          <div id="subContent"></div>
+        </div>`;
+      seleccionarSubTab('usuarios', document.getElementById('subTabUsuariosBtn'));
+    }
+
+    function seleccionarSubTab(cual, btn) {
+      document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const sc = document.getElementById('subContent');
+      if (cual === 'usuarios') renderSubTabUsuarios(sc);
+      else renderSubTabAuditoria(sc);
+    }
+
+    function renderSubTabUsuarios(container) {
+      container.innerHTML = `
+        <div class="card-header">
+          <div class="card-title">
+            <div class="dot" style="background:var(--green)"></div>
+            Gestión de Usuarios — Trabajadores
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div class="search-wrap">
+              <span class="search-icon">🔎</span>
+              <input type="text" id="searchUsuarios" placeholder="Buscar cédula, nombre, correo..."
+                oninput="filtrarUsuarios(this.value)" />
             </div>
             <button class="btn-add" onclick="abrirModalCrear()">➕ Nuevo Usuario</button>
           </div>
+        </div>
 
-          <div id="tablaStatus" class="status-bar status-loading">
-            <span class="spinner"></span> Cargando trabajadores...
-          </div>
+        <div id="tablaStatus" class="status-bar status-loading">
+          <span class="spinner"></span> Cargando trabajadores...
+        </div>
 
-          <div class="tabla-wrap">
-            <table id="tablaUsuarios" style="display:none;">
-              <thead>
-                <tr>
-                  <th>Cédula</th>
-                  <th>Código</th>
-                  <th>Nombre</th>
-                  <th>Celular</th>
-                  <th>Correo</th>
-                  <th>Roles</th>
-                  <th>Estado</th>
-                  <th style="text-align:center;">Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="tablaBody"></tbody>
-            </table>
-          </div>
-          <p id="tablaVacia" style="color:var(--muted); font-size:.85rem; padding:8px 0; display:none;">
-            No hay trabajadores registrados.
-          </p>
-        </div>`;
+        <div class="tabla-wrap">
+          <table id="tablaUsuarios" style="display:none;">
+            <thead>
+              <tr>
+                <th>Cédula</th>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Celular</th>
+                <th>Correo</th>
+                <th>Roles</th>
+                <th>Estado</th>
+                <th style="text-align:center;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaBody"></tbody>
+          </table>
+        </div>
+        <p id="tablaVacia" style="color:var(--muted); font-size:.85rem; padding:8px 0; display:none;">
+          No hay trabajadores registrados.
+        </p>`;
       cargarUsuarios();
+    }
+
+    function filtrarUsuarios(texto) {
+      const q = texto.toLowerCase();
+      renderTabla(usuariosData.filter(u =>
+        u.cedula.toLowerCase().includes(q) ||
+        u.nombre.toLowerCase().includes(q) ||
+        (u.correo || '').toLowerCase().includes(q) ||
+        (u.codigoTrabajador || '').toLowerCase().includes(q)
+      ));
+    }
+
+    function renderSubTabAuditoria(container) {
+      container.innerHTML = `
+        <div class="card-header">
+          <div class="card-title">
+            <div class="dot" style="background:var(--yellow)"></div>
+            Auditoría del Sistema — Últimos 400 registros
+          </div>
+          <div class="search-wrap">
+            <span class="search-icon">🔎</span>
+            <input type="text" id="searchAuditoria" placeholder="Buscar acción, trabajador, descripción..."
+              oninput="filtrarAuditoria(this.value)" />
+          </div>
+        </div>
+
+        <div id="auditoriaStatus" class="status-bar status-loading">
+          <span class="spinner"></span> Cargando registros de auditoría...
+        </div>
+
+        <div class="tabla-wrap">
+          <table id="tablaAuditoria" style="display:none;">
+            <thead>
+              <tr>
+                <th>Fecha y Hora</th>
+                <th>Acción</th>
+                <th>Trabajador</th>
+                <th>Tabla</th>
+                <th>Resultado</th>
+                <th>Descripción</th>
+                <th>IP</th>
+              </tr>
+            </thead>
+            <tbody id="auditoriaBody"></tbody>
+          </table>
+        </div>
+        <p id="auditoriaVacia" style="color:var(--muted); font-size:.85rem; padding:8px 0; display:none;">
+          No hay registros de auditoría.
+        </p>`;
+      cargarAuditoria();
+    }
+
+    async function cargarAuditoria() {
+      const statusEl = document.getElementById('auditoriaStatus');
+      if (!statusEl) return;
+      const r = await apiFetch('/api/Usuario/auditoria');
+      if (!r) return;
+      const data = await r.json();
+      if (!r.ok) {
+        statusEl.className = 'status-bar status-error';
+        statusEl.innerHTML = '❌ ' + (data.error || 'Error al cargar la auditoría');
+        return;
+      }
+      auditoriaData = data;
+      statusEl.style.display = 'none';
+      renderTablaAuditoria(data);
+    }
+
+    function filtrarAuditoria(texto) {
+      const q = texto.toLowerCase();
+      renderTablaAuditoria(auditoriaData.filter(a =>
+        (a.TipoAccion || '').toLowerCase().includes(q) ||
+        (a.NombreTrabajador || '').toLowerCase().includes(q) ||
+        (a.CedulaTrabajador || '').toLowerCase().includes(q) ||
+        (a.Descripcion || '').toLowerCase().includes(q) ||
+        (a.TablaAfectada || '').toLowerCase().includes(q) ||
+        (a.Resultado || '').toLowerCase().includes(q)
+      ));
+    }
+
+    function badgeAccion(tipo) {
+      const map = {
+        LOGIN: 'badge-green', LOGOUT: 'badge-purple',
+        LOGIN_FALLIDO: 'badge-red', CREAR: 'badge-purple',
+        EDITAR: 'badge-yellow', ELIMINAR: 'badge-red',
+        CAMBIO_ESTADO: 'badge-orange', CAMBIO_CONTRASENA: 'badge-yellow',
+        CONSULTAR: 'badge-purple',
+      };
+      return map[tipo] || 'badge-purple';
+    }
+
+    function badgeResultado(r) {
+      if (r === 'EXITOSO') return 'badge-green';
+      if (r === 'FALLIDO') return 'badge-red';
+      if (r === 'NO_AUTORIZADO') return 'badge-orange';
+      return 'badge-purple';
+    }
+
+    function formatFecha(fechaStr) {
+      if (!fechaStr) return '—';
+      const d = new Date(fechaStr);
+      return d.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: '2-digit' })
+        + ' ' + d.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderTablaAuditoria(registros) {
+      const tabla = document.getElementById('tablaAuditoria');
+      const vacia = document.getElementById('auditoriaVacia');
+      const body  = document.getElementById('auditoriaBody');
+      if (!tabla) return;
+      if (!registros.length) {
+        tabla.style.display = 'none';
+        vacia.style.display = 'block';
+        return;
+      }
+      tabla.style.display = 'table';
+      vacia.style.display = 'none';
+      body.innerHTML = registros.map(a => `
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace; font-size:.75rem; white-space:nowrap; color:var(--muted);">
+            ${formatFecha(a.FechaHora)}
+          </td>
+          <td><span class="badge ${badgeAccion(a.TipoAccion)}" style="font-size:.65rem; white-space:nowrap;">${a.TipoAccion || '—'}</span></td>
+          <td>
+            <div style="font-size:.83rem; font-weight:600;">${a.NombreTrabajador || '—'}</div>
+            <div style="font-size:.72rem; color:var(--muted); font-family:'JetBrains Mono',monospace;">${a.CedulaTrabajador || ''}</div>
+          </td>
+          <td style="font-size:.8rem; color:var(--muted);">${a.TablaAfectada || '—'}</td>
+          <td><span class="badge ${badgeResultado(a.Resultado)}" style="font-size:.65rem;">${a.Resultado || '—'}</span></td>
+          <td style="font-size:.8rem; max-width:260px; color:var(--muted); word-break:break-word;">${a.Descripcion || '—'}</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--muted);">${a.DireccionIP || '—'}</td>
+        </tr>`).join('');
     }
 
     async function cargarUsuarios() {
@@ -644,7 +1335,7 @@
     function renderTabla(usuarios) {
       const tabla = document.getElementById('tablaUsuarios');
       const vacia = document.getElementById('tablaVacia');
-      const body  = document.getElementById('tablaBody');
+      const body = document.getElementById('tablaBody');
       if (!tabla) return;
 
       if (!usuarios.length) {
@@ -667,8 +1358,8 @@
           <td style="font-size:.8rem; color:var(--muted);">${u.correo}</td>
           <td>
             ${(u.roles || []).map(r =>
-              `<span class="badge badge-purple" style="margin:2px; font-size:.65rem;">${r.nombre}</span>`
-            ).join('') || '<span style="color:var(--muted); font-size:.78rem;">Sin rol</span>'}
+        `<span class="badge badge-purple" style="margin:2px; font-size:.65rem;">${r.nombre}</span>`
+      ).join('') || '<span style="color:var(--muted); font-size:.78rem;">Sin rol</span>'}
           </td>
           <td>
             <span class="badge ${u.activo ? 'badge-green' : 'badge-red'}">
@@ -679,9 +1370,9 @@
             <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
               <button class="action-btn btn-edit" onclick="abrirModalEditar('${u.cedula}')">✏️ Editar</button>
               ${u.activo
-                ? `<button class="action-btn btn-delete"  onclick="toggleEstado('${u.cedula}', false)">🗑️ Eliminar</button>`
-                : `<button class="action-btn btn-restore" onclick="toggleEstado('${u.cedula}', true)">↩ Restaurar</button>`
-              }
+          ? `<button class="action-btn btn-delete"  onclick="toggleEstado('${u.cedula}', false)">🗑️ Eliminar</button>`
+          : `<button class="action-btn btn-restore" onclick="toggleEstado('${u.cedula}', true)">↩ Restaurar</button>`
+        }
             </div>
           </td>
         </tr>`).join('');
@@ -711,11 +1402,11 @@
 
     async function abrirModalCrear() {
       editandoCedula = null;
-      document.getElementById('modalIcon').textContent   = '👤';
+      document.getElementById('modalIcon').textContent = '👤';
       document.getElementById('modalTitulo').textContent = 'Nuevo Usuario';
-      document.getElementById('modalSub').textContent    = 'Completa los campos para registrar un nuevo trabajador.';
+      document.getElementById('modalSub').textContent = 'Completa los campos para registrar un nuevo trabajador.';
       document.getElementById('uCedula').disabled = false;
-      ['uCedula','uCodigo','uNombre','uCelular','uTelefono','uCorreo','uDireccion','uContrasena']
+      ['uCedula', 'uCodigo', 'uNombre', 'uCelular', 'uTelefono', 'uCorreo', 'uDireccion', 'uContrasena']
         .forEach(id => { document.getElementById(id).value = ''; });
       document.getElementById('contrasenaGroup').style.display = 'block';
       setStatus('modalStatus', 'idle', '⏳ Completa los campos requeridos (*)');
@@ -729,16 +1420,16 @@
       if (!u) return;
 
       editandoCedula = cedula;
-      document.getElementById('modalIcon').textContent   = '✏️';
+      document.getElementById('modalIcon').textContent = '✏️';
       document.getElementById('modalTitulo').textContent = 'Editar Usuario';
-      document.getElementById('modalSub').textContent    = `Modificando datos de ${u.nombre}`;
-      document.getElementById('uCedula').value    = cedula;
+      document.getElementById('modalSub').textContent = `Modificando datos de ${u.nombre}`;
+      document.getElementById('uCedula').value = cedula;
       document.getElementById('uCedula').disabled = true;
-      document.getElementById('uCodigo').value    = u.codigoTrabajador;
-      document.getElementById('uNombre').value    = u.nombre;
-      document.getElementById('uCelular').value   = u.celular;
-      document.getElementById('uTelefono').value  = u.telefono || '';
-      document.getElementById('uCorreo').value    = u.correo;
+      document.getElementById('uCodigo').value = u.codigoTrabajador;
+      document.getElementById('uNombre').value = u.nombre;
+      document.getElementById('uCelular').value = u.celular;
+      document.getElementById('uTelefono').value = u.telefono || '';
+      document.getElementById('uCorreo').value = u.correo;
       document.getElementById('uDireccion').value = u.direccion;
       document.getElementById('contrasenaGroup').style.display = 'none';
       setStatus('modalStatus', 'idle', '⏳ Modifica los campos necesarios');
@@ -764,6 +1455,134 @@
     function cerrarModalSiOverlay(e) { if (e.target === document.getElementById('modalUsuario')) cerrarModalUsuario(); }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModalUsuario(); });
 
+    // ── Perfil ────────────────────────────────────────────────────────────────
+    function irAPerfil() {
+      document.getElementById('tabsSection').style.display = 'none';
+      document.getElementById('profileSection').style.display = 'block';
+      document.getElementById('headerModule').textContent = 'Mi Perfil';
+      document.getElementById('btnPerfil').classList.add('active');
+      cargarPerfil();
+    }
+
+    function volverAlPanel() {
+      document.getElementById('profileSection').style.display = 'none';
+      document.getElementById('tabsSection').style.display = 'block';
+      document.getElementById('btnPerfil').classList.remove('active');
+      // Restaurar el tab activo en el header
+      const tabActivo = document.querySelector('.tab-btn.active');
+      document.getElementById('headerModule').textContent = tabActivo ? tabActivo.textContent : 'Panel';
+    }
+
+    async function cargarPerfil() {
+      const r = await apiFetch('/api/perfil');
+      if (!r) return;
+      const data = await r.json();
+      if (!r.ok) return;
+
+      // Hero
+      document.getElementById('profileAvatar').textContent = iniciales(data.nombre);
+      document.getElementById('profileNombre').textContent = data.nombre;
+      document.getElementById('profileCedula').textContent = data.cedula;
+      document.getElementById('profileCodigo').textContent = data.codigoTrabajador;
+
+      // Badges de roles
+      document.getElementById('profileRolesBadges').innerHTML =
+        (data.roles || []).map(r => `<span class="badge badge-purple" style="margin:2px;">${r}</span>`).join('');
+
+      // Campos editables
+      document.getElementById('pNombre').value = data.nombre;
+      document.getElementById('pCelular').value = data.celular;
+      document.getElementById('pTelefono').value = data.telefono || '';
+      document.getElementById('pCorreo').value = data.correo;
+      document.getElementById('pDireccion').value = data.direccion;
+
+      // Limpiar contraseña
+      ['pContrasenaActual', 'pNuevaContrasena', 'pConfirmarContrasena'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      setStatus('perfilInfoStatus', 'idle', '⏳ Modifica los campos y guarda los cambios');
+      setStatus('perfilPassStatus', 'idle', '⏳ Completa los tres campos para cambiar tu contraseña');
+    }
+
+    async function guardarInfoPerfil() {
+      const datos = {
+        Nombre: document.getElementById('pNombre').value.trim(),
+        Celular: document.getElementById('pCelular').value.trim(),
+        Telefono: document.getElementById('pTelefono').value.trim() || null,
+        CorreoElectronico: document.getElementById('pCorreo').value.trim(),
+        Direccion: document.getElementById('pDireccion').value.trim(),
+      };
+
+      if (!datos.Nombre || !datos.Celular || !datos.CorreoElectronico || !datos.Direccion) {
+        setStatus('perfilInfoStatus', 'error', '❌ Nombre, celular, correo y dirección son obligatorios');
+        return;
+      }
+
+      const btn = document.getElementById('btnGuardarInfo');
+      btn.disabled = true;
+      setStatus('perfilInfoStatus', 'loading', '<span class="spinner"></span> Guardando...');
+
+      const r = await apiFetch('/api/perfil', { method: 'PUT', body: JSON.stringify(datos) });
+      btn.disabled = false;
+      if (!r) return;
+
+      const data = await r.json();
+      if (r.ok) {
+        setStatus('perfilInfoStatus', 'ok', '✅ ' + data.mensaje);
+        // Actualizar nombre en el header y en localStorage
+        document.getElementById('profileNombre').textContent = datos.Nombre;
+        document.getElementById('userName').textContent = datos.Nombre;
+        document.getElementById('userAvatar').textContent = iniciales(datos.Nombre);
+        document.getElementById('profileAvatar').textContent = iniciales(datos.Nombre);
+        const uStored = JSON.parse(localStorage.getItem('baldrium_user') || '{}');
+        uStored.nombre = datos.Nombre;
+        uStored.correo = datos.CorreoElectronico;
+        localStorage.setItem('baldrium_user', JSON.stringify(uStored));
+      } else {
+        setStatus('perfilInfoStatus', 'error', '❌ ' + (data.error || 'Error al guardar'));
+      }
+    }
+
+    async function cambiarContrasena() {
+      const actual = document.getElementById('pContrasenaActual').value;
+      const nueva = document.getElementById('pNuevaContrasena').value;
+      const confirmar = document.getElementById('pConfirmarContrasena').value;
+
+      if (!actual || !nueva || !confirmar) {
+        setStatus('perfilPassStatus', 'error', '❌ Completa los tres campos');
+        return;
+      }
+      if (nueva !== confirmar) {
+        setStatus('perfilPassStatus', 'error', '❌ La nueva contraseña y su confirmación no coinciden');
+        return;
+      }
+      if (nueva.length < 6) {
+        setStatus('perfilPassStatus', 'error', '❌ La nueva contraseña debe tener al menos 6 caracteres');
+        return;
+      }
+
+      const btn = document.getElementById('btnCambiarPass');
+      btn.disabled = true;
+      setStatus('perfilPassStatus', 'loading', '<span class="spinner"></span> Cambiando contraseña...');
+
+      const r = await apiFetch('/api/perfil/contrasena', {
+        method: 'PATCH',
+        body: JSON.stringify({ contrasenaActual: actual, nuevaContrasena: nueva })
+      });
+      btn.disabled = false;
+      if (!r) return;
+
+      const data = await r.json();
+      if (r.ok) {
+        setStatus('perfilPassStatus', 'ok', '✅ ' + data.mensaje);
+        ['pContrasenaActual', 'pNuevaContrasena', 'pConfirmarContrasena'].forEach(id => {
+          document.getElementById(id).value = '';
+        });
+      } else {
+        setStatus('perfilPassStatus', 'error', '❌ ' + (data.error || 'Error al cambiar la contraseña'));
+      }
+    }
+
     function getRolesSeleccionados() {
       return [...document.querySelectorAll('#rolesCheckboxes input[type=checkbox]:checked')]
         .map(cb => parseInt(cb.value));
@@ -771,17 +1590,17 @@
 
     async function guardarUsuario() {
       const datos = {
-        Cedula:            document.getElementById('uCedula').value.trim(),
-        CodigoTrabajador:  document.getElementById('uCodigo').value.trim(),
-        Nombre:            document.getElementById('uNombre').value.trim(),
-        Celular:           document.getElementById('uCelular').value.trim(),
-        Telefono:          document.getElementById('uTelefono').value.trim() || null,
+        Cedula: document.getElementById('uCedula').value.trim(),
+        CodigoTrabajador: document.getElementById('uCodigo').value.trim(),
+        Nombre: document.getElementById('uNombre').value.trim(),
+        Celular: document.getElementById('uCelular').value.trim(),
+        Telefono: document.getElementById('uTelefono').value.trim() || null,
         CorreoElectronico: document.getElementById('uCorreo').value.trim(),
-        Direccion:         document.getElementById('uDireccion').value.trim(),
+        Direccion: document.getElementById('uDireccion').value.trim(),
       };
       const roles = getRolesSeleccionados();
 
-      const faltante = ['Cedula','CodigoTrabajador','Nombre','Celular','CorreoElectronico','Direccion']
+      const faltante = ['Cedula', 'CodigoTrabajador', 'Nombre', 'Celular', 'CorreoElectronico', 'Direccion']
         .some(k => !datos[k]);
       if (faltante) {
         setStatus('modalStatus', 'error', '❌ Completa todos los campos obligatorios (*)');
