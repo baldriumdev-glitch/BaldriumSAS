@@ -611,7 +611,9 @@
       margin-bottom: -1px;
     }
 
-    .sub-tab-btn:hover { color: var(--text); }
+    .sub-tab-btn:hover {
+      color: var(--text);
+    }
 
     .sub-tab-btn.active {
       color: var(--accent2);
@@ -1286,7 +1288,7 @@
     function renderTablaAuditoria(registros) {
       const tabla = document.getElementById('tablaAuditoria');
       const vacia = document.getElementById('auditoriaVacia');
-      const body  = document.getElementById('auditoriaBody');
+      const body = document.getElementById('auditoriaBody');
       if (!tabla) return;
       if (!registros.length) {
         tabla.style.display = 'none';
@@ -1626,7 +1628,7 @@
         setStatus('modalStatus', 'ok', '✅ ' + (data.mensaje || 'Guardado correctamente'));
         setTimeout(async () => { cerrarModalUsuario(); await cargarUsuarios(); }, 700);
       } else {
-        setStatus('modalStatus', 'error', '❌ ' + (data.error || 'Error al guardar'));
+        setStatus('modalStatus', 'error', '❌ ' + (data.error || 'Paila al guardar'));
       }
     }
   </script>
