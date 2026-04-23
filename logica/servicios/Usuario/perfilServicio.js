@@ -1,8 +1,8 @@
-const bcrypt = require('bcrypt');
-const repo   = require('../../db/trabajadorRepositorio');
+const bcrypt  = require('bcrypt');
+const cliente = require('../../persistenciaCliente');
 
 async function obtenerPerfil(cedula) {
-    const resultado = await repo.buscarPorCedula(cedula);
+    const resultado = await cliente.trabajador.buscarPorCedula(cedula);
     if (!resultado) throw new Error('Usuario no encontrado.');
 
     const { trabajador, roles } = resultado;
@@ -23,20 +23,20 @@ async function actualizarPerfil(cedula, datos) {
     if (!Nombre || !Celular || !CorreoElectronico || !Direccion) {
         throw new Error('Nombre, celular, correo y dirección son requeridos.');
     }
-    await repo.actualizarPerfil(cedula, { Nombre, Celular, Telefono, CorreoElectronico, Direccion });
+    await cliente.trabajador.actualizarPerfil(cedula, { Nombre, Celular, Telefono, CorreoElectronico, Direccion });
 }
 
 async function cambiarContrasena(cedula, contrasenaActual, nuevaContrasena) {
     if (!contrasenaActual || !nuevaContrasena) {
         throw new Error('La contraseña actual y la nueva son requeridas.');
     }
-    const resultado = await repo.buscarPorCedula(cedula);
+    const resultado = await cliente.trabajador.buscarPorCedula(cedula);
     if (!resultado) throw new Error('Usuario no encontrado.');
 
     const esValida = await bcrypt.compare(contrasenaActual, resultado.trabajador.Contrasena);
     if (!esValida) throw new Error('La contraseña actual es incorrecta.');
 
-    await repo.actualizarContrasena(cedula, nuevaContrasena);
+    await cliente.trabajador.actualizarContrasena(cedula, nuevaContrasena);
 }
 
 module.exports = { obtenerPerfil, actualizarPerfil, cambiarContrasena };

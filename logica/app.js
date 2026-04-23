@@ -1,9 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 
-const authRutas    = require('./rutas/authRutas');
-const usuarioRutas = require('./rutas/usuarioRutas');
-const perfilRutas  = require('./rutas/perfilRutas');
+const authRutas = require('./rutas/Login/authRutas');
+const usuarioRutas = require('./rutas/Usuario/usuarioRutas');
+const perfilRutas = require('./rutas/Usuario/perfilRutas');
+const inventarioRutas = require('./rutas/Inventario/inventarioRutas');
 
 const { verificarToken } = require('./seguridad/jwtMiddleware');
 
@@ -18,7 +19,8 @@ app.use('/api/auth', authRutas);
 
 // ─── Rutas protegidas ─────────────────────────────────────────────────────────
 app.use('/api/Usuario', usuarioRutas);
-app.use('/api/perfil',  perfilRutas);
+app.use('/api/perfil', perfilRutas);
+app.use('/api/Inventario', inventarioRutas);
 
 app.get('/api/protegido', verificarToken, (req, res) => {
     res.json({
