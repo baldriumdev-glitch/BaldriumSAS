@@ -34,7 +34,7 @@ function log(icon, msg) {
   // 2. Empaquetar + minificar con esbuild
   try {
     const result = await esbuild.build({
-      entryPoints: [path.join(SRC, 'app.js')],
+      entryPoints: [path.join(SRC, 'src', 'app.js')],
       bundle: true,          // empaqueta imports/requires
       minify: true,          // minifica (elimina espacios, comentarios)
       platform: 'node',        // target Node.js (no browser APIs)

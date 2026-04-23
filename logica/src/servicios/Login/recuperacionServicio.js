@@ -1,5 +1,5 @@
-const cliente = require('../../persistenciaCliente');
-const { enviarContrasenaTemp } = require('./emailServicio');
+const { trabajador } = require('../../infraestructura/persistenciaCliente');
+const { enviarContrasenaTemp } = require('../../infraestructura/emailCliente');
 
 function generarContrasenaTemp() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -11,17 +11,14 @@ function generarContrasenaTemp() {
 }
 
 async function olvideMiContrasena(correo) {
-    const trabajador = await cliente.trabajador.buscarPorCorreo(correo.trim().toLowerCase());
-
-    if (!trabajador) {
+    const t = await trabajador.buscarPorCorreo(correo.trim().toLowerCase());
+    if (!t) {
         throw new Error('Si el correo existe en el sistema, recibirás las instrucciones en breve.');
     }
 
     const contrasenaTemp = generarContrasenaTemp();
-
-    await cliente.trabajador.actualizarContrasena(trabajador.Cedula, contrasenaTemp);
-
-    await enviarContrasenaTemp(trabajador.CorreoElectronico, trabajador.Nombre, contrasenaTemp);
+    await trabajador.actualizarContrasena(t.Cedula, contrasenaTemp);
+    await enviarContrasenaTemp(t.CorreoElectronico, t.Nombre, contrasenaTemp);
 
     return { mensaje: 'Si el correo existe en el sistema, recibirás las instrucciones en breve.' };
 }

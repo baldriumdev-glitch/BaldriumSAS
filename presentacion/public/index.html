@@ -1120,6 +1120,23 @@
       window.location.href = 'login.html';
     }
 
+    // Valida el token contra el servidor al cargar la página.
+    // Si expiró o es inválido, limpia la sesión y redirige al login.
+    (async () => {
+      try {
+        const r = await fetch(`${API}/api/perfil`, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (r.status === 401) {
+          localStorage.removeItem('baldrium_token');
+          localStorage.removeItem('baldrium_user');
+          window.location.href = 'login.html';
+        }
+      } catch {
+        // Si el servidor no responde, no redirigir — puede ser un problema de red temporal
+      }
+    })();
+
     function cerrarSesion() {
       localStorage.removeItem('baldrium_token');
       localStorage.removeItem('baldrium_user');
