@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const IMAGES_DIR = path.resolve(__dirname, '../../presentacion/public/images');
+const IMAGES_DIR = path.resolve(__dirname, '../../../presentacion/public/images');
 
 async function enviarContrasenaTemp(destinatario, nombre, contrasenaTemp) {
   const mailOptions = {
@@ -21,7 +21,7 @@ async function enviarContrasenaTemp(destinatario, nombre, contrasenaTemp) {
     attachments: [
       {
         filename: 'logo.png',
-        path: path.join(IMAGES_DIR, 'logo.png'),
+        path: path.join(IMAGES_DIR, 'Logo.png'),
         cid: 'logo_baldrium',
       },
     ],

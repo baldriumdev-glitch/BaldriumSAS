@@ -97,4 +97,57 @@ const auditoria = {
         _req('GET', `/auditoria/inventario/info?limite=${limite}`),
 };
 
-module.exports = { trabajador, inventario, auditoria };
+// ─── Compras ─────────────────────────────────────────────────────────────────
+
+const compra = {
+    inventarioCocina: () =>
+        _req('GET', '/compras/inventario-cocina'),
+
+    clientePorPersona: (personaId) =>
+        _req('GET', `/compras/cliente-por-persona?personaId=${personaId}`),
+
+    crearClienteDesdeProspecto: (personaId, datos, auditCtx) =>
+        _req('POST', '/compras/crear-cliente', { personaId, auditCtx, ...datos }),
+
+    crearCompra: (cedulaCliente, actor, formaPago, notas, items) =>
+        _req('POST', '/compras/nueva', { cedulaCliente, actor, formaPago, notas, items }),
+
+    registrarClienteLibre: (datos, auditCtx) =>
+        _req('POST', '/compras/cliente-libre', { auditCtx, ...datos }),
+};
+
+// ─── Visitas ─────────────────────────────────────────────────────────────────
+
+const visita = {
+    listarSemana: (cedula, inicio, fin) =>
+        _req('GET', `/visitas/semana?cedula=${encodeURIComponent(cedula)}&inicio=${inicio}&fin=${fin}`),
+
+    listarMes: (cedula, anio, mes) =>
+        _req('GET', `/visitas/mes?cedula=${encodeURIComponent(cedula)}&anio=${anio}&mes=${mes}`),
+
+    buscar: (cedula, q) =>
+        _req('GET', `/visitas/buscar?cedula=${encodeURIComponent(cedula)}&q=${encodeURIComponent(q)}`),
+
+    kpiSemana: (cedula, inicio, fin) =>
+        _req('GET', `/visitas/kpi?cedula=${encodeURIComponent(cedula)}&inicio=${inicio}&fin=${fin}`),
+
+    detallePersona: (personaId) =>
+        _req('GET', `/visitas/detalle?personaId=${personaId}`),
+
+    historialCompras: (personaId) =>
+        _req('GET', `/visitas/compras?personaId=${personaId}`),
+
+    historialVisitas: (personaId) =>
+        _req('GET', `/visitas/historial-visitas?personaId=${personaId}`),
+
+    cambiarEstado: (visitaId, estado) =>
+        _req('POST', '/visitas/estado', { visitaId, estado }),
+
+    inventarioAlimentacion: () =>
+        _req('GET', '/visitas/alimentacion'),
+
+    guardarSuplemento: (visitaId, suplementos, actor) =>
+        _req('POST', '/visitas/suplemento', { visitaId, suplementos, actor }),
+};
+
+module.exports = { trabajador, inventario, auditoria, visita, compra };

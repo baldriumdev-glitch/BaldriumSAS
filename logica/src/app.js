@@ -4,7 +4,8 @@ const cors = require('cors');
 const authRutas = require('./rutas/Login/authRutas');
 const usuarioRutas = require('./rutas/Usuario/usuarioRutas');
 const perfilRutas = require('./rutas/Usuario/perfilRutas');
-const inventarioRutas = require('./rutas/Inventario/inventarioRutas');
+const inventarioRutas    = require('./rutas/Inventario/inventarioRutas');
+const telemercadeoRutas  = require('./rutas/Telemercadeo/telemercadeoRutas');
 
 const { verificarToken } = require('./seguridad/jwtMiddleware');
 
@@ -21,6 +22,7 @@ app.use('/api/auth', authRutas);
 app.use('/api/Usuario', usuarioRutas);
 app.use('/api/perfil', perfilRutas);
 app.use('/api/Inventario', inventarioRutas);
+app.use('/api/telemercadeo', telemercadeoRutas);
 
 app.get('/api/protegido', verificarToken, (req, res) => {
     res.json({
