@@ -1,4 +1,4 @@
-const { compra } = require('../../infraestructura/persistenciaCliente');
+const { compra } = require('../../../infraestructura/persistenciaCliente');
 
 async function inventarioCocina() {
     return compra.inventarioCocina();

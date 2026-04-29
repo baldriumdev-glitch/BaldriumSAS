@@ -1,4 +1,4 @@
-const { visita, auditoria } = require('../../infraestructura/persistenciaCliente');
+const { visita, auditoria } = require('../../../infraestructura/persistenciaCliente');
 
 function _semanaActual() {
     const hoy = new Date();
@@ -9,7 +9,7 @@ function _semanaActual() {
     domingo.setDate(lunes.getDate() + 6);
     return {
         inicio: lunes.toISOString().split('T')[0],
-        fin:    domingo.toISOString().split('T')[0],
+        fin: domingo.toISOString().split('T')[0],
     };
 }
 
@@ -59,15 +59,15 @@ async function cambiarEstado(visitaId, estado, suplementos = [], auditCtx = {}) 
     }
     try {
         await auditoria.registrarSistema({
-            cedulaTrabajador:  auditCtx.actor?.cedula  ?? null,
-            nombreTrabajador:  auditCtx.actor?.nombre  ?? null,
-            tipoAccion:        'EDITAR',
-            tablaAfectada:     'visita_estado',
+            cedulaTrabajador: auditCtx.actor?.cedula ?? null,
+            nombreTrabajador: auditCtx.actor?.nombre ?? null,
+            tipoAccion: 'EDITAR',
+            tablaAfectada: 'visita_estado',
             registroAfectadoID: visitaId,
-            valorNuevo:        estado,
-            descripcion:       `Estado de visita #${visitaId} cambiado a "${estado}"`,
-            direccionIP:       auditCtx.ip    ?? null,
-            dispositivo:       auditCtx.device ?? null,
+            valorNuevo: estado,
+            descripcion: `Estado de visita #${visitaId} cambiado a "${estado}"`,
+            direccionIP: auditCtx.ip ?? null,
+            dispositivo: auditCtx.device ?? null,
         });
     } catch (err) {
         console.error('[Auditoría] Error al registrar cambio de estado:', err.message);
