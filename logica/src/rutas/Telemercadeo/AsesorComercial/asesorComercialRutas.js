@@ -53,9 +53,9 @@ router.get('/visitas/alimentacion', async (_req, res) => {
 
 router.post('/visitas/estado', async (req, res) => {
     try {
-        const { visitaId, estado, suplementos = [] } = req.body;
+        const { visitaId, estado, suplementos = [], notas } = req.body;
         const auditCtx = { ip: extraerIP(req), device: extraerDispositivo(req), actor: req.usuario };
-        await svc.cambiarEstado(visitaId, estado, suplementos, auditCtx);
+        await svc.cambiarEstado(visitaId, estado, suplementos, auditCtx, notas);
         res.json({ ok: true });
     } catch (e) {
         res.status(400).json({ error: e.message });
@@ -87,6 +87,15 @@ router.get('/persona/visitas', async (req, res) => {
 });
 
 // ─── Compras ──────────────────────────────────────────────────────────────────
+
+router.get('/compras/mis-compras', async (req, res) => {
+    try {
+        const result = await compraSvc.listarComprasTrabajador(req.usuario.cedula);
+        res.json(result);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
 
 router.get('/compras/inventario-cocina', async (_req, res) => {
     try {
@@ -129,8 +138,9 @@ router.post('/compras/cliente-libre', async (req, res) => {
 
 router.post('/compras/nueva', async (req, res) => {
     try {
-        const { cedulaCliente, formaPago, notas, items } = req.body;
-        const result = await compraSvc.crearCompra(cedulaCliente, req.usuario, formaPago, notas, items);
+        const { cedulaCliente, formaPago, notas, items, referidos } = req.body;
+        const auditCtx = { ip: extraerIP(req), device: extraerDispositivo(req), actor: req.usuario };
+        const result = await compraSvc.crearCompra(cedulaCliente, req.usuario, formaPago, notas, items, referidos, auditCtx);
         res.json(result);
     } catch (e) {
         res.status(400).json({ error: e.message });

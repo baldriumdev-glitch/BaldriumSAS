@@ -32,8 +32,8 @@ router.post('/crear-cliente', async (req, res) => {
 
 router.post('/nueva', async (req, res) => {
     try {
-        const { cedulaCliente, actor, formaPago, notas, items } = req.body;
-        const result = await repo.crearCompra(cedulaCliente, actor, formaPago, notas, items);
+        const { cedulaCliente, actor, formaPago, notas, items, referidos, auditCtx } = req.body;
+        const result = await repo.crearCompra(cedulaCliente, actor, formaPago, notas, items, referidos, auditCtx);
         res.json(result);
     } catch (e) {
         res.status(400).json({ error: e.message });
@@ -47,6 +47,16 @@ router.post('/cliente-libre', async (req, res) => {
         res.json(result);
     } catch (e) {
         res.status(400).json({ error: e.message });
+    }
+});
+
+router.get('/mis-compras', async (req, res) => {
+    try {
+        const { cedula } = req.query;
+        const rows = await repo.listarComprasTrabajador(cedula);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
     }
 });
 

@@ -69,7 +69,11 @@ async function kpiSemana(cedula, fechaInicio, fechaFin) {
            SUM(CASE WHEN
              (SELECT Estado FROM visita_estado WHERE VisitaID = v.ID
               ORDER BY ID DESC LIMIT 1) = 'Visitado'
-           THEN 1 ELSE 0 END) AS VisitasConfirmadas
+           THEN 1 ELSE 0 END) AS VisitasConfirmadas,
+           SUM(CASE WHEN
+             (SELECT Estado FROM visita_estado WHERE VisitaID = v.ID
+              ORDER BY ID DESC LIMIT 1) IN ('No contesta', 'Rechaza')
+           THEN 1 ELSE 0 END) AS VisitasNoEfectivas
          FROM visita v
          WHERE v.CedulaTrabajador = ? AND v.FechaVisita BETWEEN ? AND ?`,
         [cedula, fechaInicio, fechaFin]
@@ -138,12 +142,27 @@ async function historialVisitas(personaId) {
 
 const ESTADOS_VALIDOS = ['Pendiente', 'Visitado', 'No contesta', 'Rechaza'];
 
-async function cambiarEstado(visitaId, nuevoEstado) {
+async function cambiarEstado(visitaId, nuevoEstado, notas = null) {
     if (!ESTADOS_VALIDOS.includes(nuevoEstado)) throw new Error('Estado inválido');
-    await pool.query(
-        'INSERT INTO visita_estado (VisitaID, Estado, FechaActualizacion) VALUES (?, ?, NOW())',
-        [visitaId, nuevoEstado]
-    );
+    if (!notas || !notas.trim()) throw new Error('Las notas son obligatorias');
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+        await conn.query(
+            'INSERT INTO visita_estado (VisitaID, Estado, FechaActualizacion) VALUES (?, ?, NOW())',
+            [visitaId, nuevoEstado]
+        );
+        await conn.query(
+            'UPDATE visita SET Notas = ? WHERE ID = ?',
+            [notas.trim(), visitaId]
+        );
+        await conn.commit();
+    } catch (e) {
+        await conn.rollback();
+        throw e;
+    } finally {
+        conn.release();
+    }
 }
 
 async function inventarioAlimentacion() {

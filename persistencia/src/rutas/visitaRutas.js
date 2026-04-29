@@ -41,8 +41,8 @@ router.get('/compras', async (req, res) => {
 
 router.post('/estado', async (req, res) => {
     try {
-        const { visitaId, estado } = req.body;
-        await repo.cambiarEstado(visitaId, estado);
+        const { visitaId, estado, notas } = req.body;
+        await repo.cambiarEstado(visitaId, estado, notas);
         res.json({ ok: true });
     } catch (e) {
         res.status(400).json({ error: e.message });

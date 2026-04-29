@@ -55,7 +55,7 @@ async function crearClienteDesdeProspecto(personaId, datos, auditCtx = {}) {
     }
 }
 
-async function crearCompra(cedulaCliente, actor, formaPago, notas, items) {
+async function crearCompra(cedulaCliente, actor, formaPago, notas, items, referidos = null, auditCtx = {}) {
     const conn = await pool.getConnection();
     try {
         await conn.beginTransaction();
@@ -97,6 +97,47 @@ async function crearCompra(cedulaCliente, actor, formaPago, notas, items) {
                 'UPDATE inventario SET Cantidad = ? WHERE ID = ?',
                 [cantidadPosterior, inventarioId]
             );
+        }
+
+        // Beneficio 4x14: crear prospectos referidos vinculados a esta compra
+        if (Array.isArray(referidos) && referidos.length >= 10) {
+            for (const ref of referidos) {
+                const [rPersona] = await conn.query(
+                    `INSERT INTO persona (TipoPersona) VALUES ('Prospecto')`
+                );
+                const personaId = rPersona.insertId;
+
+                const [rProspecto] = await conn.query(
+                    `INSERT INTO clienteprospecto (PersonaID, Nombre, Celular, Direccion)
+                     VALUES (?, ?, ?, ?)`,
+                    [personaId, ref.nombre || null, ref.celular || null, ref.direccion || null]
+                );
+                const prospectoId = rProspecto.insertId;
+
+                await conn.query(
+                    `INSERT INTO prospecto_estado (ProspectoID, Estado, FechaActualizacion)
+                     VALUES (?, 'Pendiente', NOW())`,
+                    [prospectoId]
+                );
+
+                await conn.query(
+                    `INSERT INTO comprareferido (ClienteProspectoID, CompraID) VALUES (?, ?)`,
+                    [prospectoId, compraId]
+                );
+
+                auditRepo.registrarSistema({
+                    cedulaTrabajador:   actor.cedula     ?? null,
+                    nombreTrabajador:   actor.nombre     ?? null,
+                    tipoAccion:         'CREAR',
+                    tablaAfectada:      'clienteprospecto',
+                    registroAfectadoID: prospectoId,
+                    valorAnterior:      null,
+                    valorNuevo:         `Referido: ${ref.nombre} | Celular: ${ref.celular} | Dirección: ${ref.direccion}`,
+                    descripcion:        `Prospecto referido creado por Beneficio 4x14 vinculado a CompraID=${compraId}`,
+                    direccionIP:        auditCtx.ip      ?? null,
+                    dispositivo:        auditCtx.device  ?? null,
+                }).catch(err => console.error('[Auditoría Referido]', err.message));
+            }
         }
 
         await conn.commit();
@@ -173,4 +214,27 @@ async function registrarClienteLibre(datos, auditCtx = {}) {
     }
 }
 
-module.exports = { inventarioCocina, clientePorPersona, crearClienteDesdeProspecto, crearCompra, registrarClienteLibre };
+async function listarComprasTrabajador(cedulaTrabajador) {
+    const [rows] = await pool.query(
+        `SELECT
+           co.ID,
+           co.FechaCompra,
+           co.TotalCompra,
+           co.EstadoCompra,
+           co.FormaPago,
+           c.Nombre AS NombreCliente,
+           GROUP_CONCAT(DISTINCT inv.Nombre ORDER BY inv.Nombre SEPARATOR ', ') AS Productos,
+           (SELECT b.EstadoBeneficio FROM beneficio b WHERE b.CompraID = co.ID LIMIT 1) AS EstadoBeneficio
+         FROM compra co
+         JOIN cliente c ON c.Cedula = co.CedulaCliente
+         LEFT JOIN compra_inventario ci ON ci.CompraID = co.ID
+         LEFT JOIN inventario inv ON inv.ID = ci.InventarioID
+         WHERE co.CedulaTrabajador = ?
+         GROUP BY co.ID
+         ORDER BY co.FechaCompra DESC`,
+        [cedulaTrabajador]
+    );
+    return rows;
+}
+
+module.exports = { inventarioCocina, clientePorPersona, crearClienteDesdeProspecto, crearCompra, registrarClienteLibre, listarComprasTrabajador };

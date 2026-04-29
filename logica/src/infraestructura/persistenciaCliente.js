@@ -109,11 +109,14 @@ const compra = {
     crearClienteDesdeProspecto: (personaId, datos, auditCtx) =>
         _req('POST', '/compras/crear-cliente', { personaId, auditCtx, ...datos }),
 
-    crearCompra: (cedulaCliente, actor, formaPago, notas, items) =>
-        _req('POST', '/compras/nueva', { cedulaCliente, actor, formaPago, notas, items }),
+    crearCompra: (cedulaCliente, actor, formaPago, notas, items, referidos, auditCtx) =>
+        _req('POST', '/compras/nueva', { cedulaCliente, actor, formaPago, notas, items, referidos, auditCtx }),
 
     registrarClienteLibre: (datos, auditCtx) =>
         _req('POST', '/compras/cliente-libre', { auditCtx, ...datos }),
+
+    listarComprasTrabajador: (cedula) =>
+        _req('GET', `/compras/mis-compras?cedula=${encodeURIComponent(cedula)}`),
 };
 
 // ─── Visitas ─────────────────────────────────────────────────────────────────
@@ -140,8 +143,8 @@ const visita = {
     historialVisitas: (personaId) =>
         _req('GET', `/visitas/historial-visitas?personaId=${personaId}`),
 
-    cambiarEstado: (visitaId, estado) =>
-        _req('POST', '/visitas/estado', { visitaId, estado }),
+    cambiarEstado: (visitaId, estado, notas) =>
+        _req('POST', '/visitas/estado', { visitaId, estado, notas }),
 
     inventarioAlimentacion: () =>
         _req('GET', '/visitas/alimentacion'),

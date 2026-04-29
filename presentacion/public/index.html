@@ -1151,6 +1151,17 @@
             background:var(--surface2);color:var(--text);font-size:.82rem;margin-bottom:8px;outline:none"/>
         <div id="alimentacionOpciones" style="display:flex;flex-direction:column;gap:7px;max-height:180px;overflow-y:auto;padding-right:4px"></div>
       </div>
+      <!-- Notas obligatorias -->
+      <div style="margin-bottom:16px">
+        <label style="font-size:.82rem;color:var(--muted);display:block;margin-bottom:6px">
+          Notas <span style="color:var(--red)">*</span>
+        </label>
+        <textarea id="cambiarEstadoNotas" rows="3"
+          style="width:100%;resize:vertical;padding:8px 10px;border-radius:8px;
+            border:1px solid var(--border);background:var(--surface2);color:var(--text);
+            font-size:.88rem;font-family:inherit;outline:none"
+          placeholder="Describe el resultado de la visita..."></textarea>
+      </div>
       <p style="color:var(--yellow);font-size:.82rem;margin-bottom:20px">
         ¿Estás seguro de cambiar el estado de esta visita?
       </p>
@@ -1280,6 +1291,35 @@
               font-size:.88rem;font-family:inherit;outline:none"
             placeholder="Observaciones opcionales..."></textarea>
         </div>
+      </div>
+
+      <!-- Beneficio 4x14 -->
+      <div style="margin-top:18px;padding:14px 16px;border:1px solid var(--border);border-radius:10px;background:var(--surface2)">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none">
+          <input type="checkbox" id="chkBeneficio4x14" onchange="_toggleBeneficio4x14()"
+            style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer" />
+          <span style="font-size:.88rem;font-weight:600;color:var(--text)">Aplicar Beneficio 4x14</span>
+        </label>
+        <p style="font-size:.78rem;color:var(--muted);margin:6px 0 0 26px">
+          Agrega mínimo 10 referidos (clientes prospectos) para aplicar al beneficio. Se crearán con estado <strong>Pendiente</strong> vinculados a esta compra.
+        </p>
+      </div>
+
+      <!-- Panel de referidos (Beneficio 4x14) -->
+      <div id="panelReferidos" style="display:none;margin-top:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700">
+            Referidos &nbsp;<span id="referidosContador" style="color:var(--accent2)">(0 / mín. 10)</span>
+          </span>
+          <button class="btn-detalle" onclick="_agregarReferido()"
+            style="border-color:var(--accent);color:var(--accent2);font-size:.78rem;padding:4px 12px">
+            ⊕ Añadir referido
+          </button>
+        </div>
+        <div id="referidosVacio" style="color:var(--muted);font-size:.85rem;padding:6px 2px">
+          Sin referidos. Haz clic en "Añadir referido".
+        </div>
+        <div id="referidosLista" style="display:flex;flex-direction:column;gap:8px"></div>
       </div>
 
       <div id="compraStatus" style="margin-top:12px"></div>
@@ -2645,6 +2685,9 @@
         <td style="text-align:center" id="estadoCell_${v.ID}">
           ${editable ? badgeVisitaBtn(v.Estado, v.ID) : badgeVisita(v.Estado)}
         </td>
+        <td style="max-width:200px;font-size:.8rem;color:var(--muted)" title="${(v.Notas || '').replace(/"/g,'&quot;')}">
+          ${v.Notas ? `<span style="color:var(--text)">${v.Notas.length > 50 ? v.Notas.slice(0, 50) + '…' : v.Notas}</span>` : '<span style="color:var(--muted);font-style:italic">Sin notas</span>'}
+        </td>
         <td style="text-align:center;white-space:nowrap">
           <button class="btn-detalle" onclick="abrirDetallePersona(${v.PersonaID},'${(v.NombrePersona||'').replace(/'/g,"\\'")}','${v.TipoPersona}')">
             Ver detalles
@@ -2667,6 +2710,7 @@
               <th style="text-align:center">Personas</th>
               <th style="text-align:center">Últ. interacción</th>
               <th style="text-align:center">Estado</th>
+              <th>Notas</th>
               <th style="text-align:center">Acciones</th>
             </tr></thead>
             <tbody id="${idTabla}Body"></tbody>
@@ -2707,6 +2751,10 @@
               <div class="kpi-label">Visitas de la semana confirmadas (Visitado)</div>
               <div class="kpi-val" id="kpiConfirmadasVal">—</div>
             </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Visitas no efectivas (No contesta + Rechaza)</div>
+              <div class="kpi-val" id="kpiNoEfectivasVal" style="color:var(--red)">—</div>
+            </div>
           </div>
           <button onclick="abrirVentaLibre()"
             style="display:flex;align-items:center;gap:8px;background:var(--accent);color:#fff;
@@ -2717,52 +2765,95 @@
           </button>
         </div>
 
-        <!-- Buscador -->
-        <div class="card" style="margin-bottom:20px">
-          <div class="card-header" style="margin-bottom:10px">
-            <div class="card-title">
-              <div class="dot" style="background:var(--green)"></div>
-              Buscar visita
-            </div>
-            <div class="search-wrap">
-              <span class="search-icon">🔎</span>
-              <input type="text" id="buscarVisitaInput"
-                placeholder="Nombre, fecha (dd/mm/yyyy) o estado..."
-                oninput="buscarVisita(this.value)" style="width:280px" />
-            </div>
-          </div>
-          <div id="buscarStatus" style="color:var(--muted);font-size:.85rem;padding:4px 0">
-            Escribe para buscar en todas tus visitas.
-          </div>
-          ${tablaVisitasHTML('tablaBuscar', 'buscarVacia')}
+        <!-- Sub-tabs -->
+        <div class="sub-tabs" style="margin-bottom:20px">
+          <button class="sub-tab-btn active" id="asesorSubTabVisitasBtn"
+            onclick="_asesorTab('visitas')">Visitas</button>
+          <button class="sub-tab-btn" id="asesorSubTabComprasBtn"
+            onclick="_asesorTab('compras')">Mis Compras</button>
         </div>
 
-        <!-- Semana -->
-        <div class="card" style="margin-bottom:20px">
-          <div class="card-header" style="margin-bottom:12px">
-            <div class="card-title">
-              <div class="dot" style="background:var(--accent2)"></div>
-              Visitas de la semana
+        <!-- ── Sección Visitas ── -->
+        <div id="asesorTabVisitas">
+          <!-- Buscador -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header" style="margin-bottom:10px">
+              <div class="card-title">
+                <div class="dot" style="background:var(--green)"></div>
+                Buscar visita
+              </div>
+              <div class="search-wrap">
+                <span class="search-icon">🔎</span>
+                <input type="text" id="buscarVisitaInput"
+                  placeholder="Nombre, fecha (dd/mm/yyyy) o estado..."
+                  oninput="buscarVisita(this.value)" style="width:280px" />
+              </div>
             </div>
+            <div id="buscarStatus" style="color:var(--muted);font-size:.85rem;padding:4px 0">
+              Escribe para buscar en todas tus visitas.
+            </div>
+            ${tablaVisitasHTML('tablaBuscar', 'buscarVacia')}
           </div>
-          <div id="semanaStatus" class="status-bar status-loading">
-            <span class="spinner"></span> Cargando visitas...
+
+          <!-- Semana -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header" style="margin-bottom:12px">
+              <div class="card-title">
+                <div class="dot" style="background:var(--accent2)"></div>
+                Visitas de la semana
+              </div>
+            </div>
+            <div id="semanaStatus" class="status-bar status-loading">
+              <span class="spinner"></span> Cargando visitas...
+            </div>
+            ${tablaVisitasHTML('tablaSemana', 'semanaVacia')}
           </div>
-          ${tablaVisitasHTML('tablaSemana', 'semanaVacia')}
+
+          <!-- Mes -->
+          <div class="card">
+            <div class="card-header" style="margin-bottom:12px">
+              <div class="card-title">
+                <div class="dot" style="background:var(--accent)"></div>
+                Visitas del mes
+              </div>
+            </div>
+            <div id="mesStatus" class="status-bar status-loading">
+              <span class="spinner"></span> Cargando visitas...
+            </div>
+            ${tablaVisitasHTML('tablaMes', 'mesVacia')}
+          </div>
         </div>
 
-        <!-- Mes -->
-        <div class="card">
-          <div class="card-header" style="margin-bottom:12px">
-            <div class="card-title">
-              <div class="dot" style="background:var(--accent)"></div>
-              Visitas del mes
+        <!-- ── Sección Mis Compras ── -->
+        <div id="asesorTabCompras" style="display:none">
+          <div class="card">
+            <div class="card-header" style="margin-bottom:12px">
+              <div class="card-title">
+                <div class="dot" style="background:var(--green)"></div>
+                Mis Compras
+              </div>
             </div>
+            <div id="misComprasStatus" class="status-bar status-loading">
+              <span class="spinner"></span> Cargando compras...
+            </div>
+            <div class="tabla-wrap">
+              <table id="tablaMisCompras" style="display:none">
+                <thead><tr>
+                  <th>Cliente</th>
+                  <th>Producto</th>
+                  <th>Fecha</th>
+                  <th style="text-align:right">Valor</th>
+                  <th style="text-align:center">Estado</th>
+                  <th style="text-align:center">Beneficio</th>
+                  <th>Forma de pago</th>
+                </tr></thead>
+                <tbody id="tablaMisComprasBody"></tbody>
+              </table>
+            </div>
+            <p id="misComprasVacia" style="color:var(--muted);font-size:.85rem;padding:8px 0;display:none">
+              No hay compras registradas.
+            </p>
           </div>
-          <div id="mesStatus" class="status-bar status-loading">
-            <span class="spinner"></span> Cargando visitas...
-          </div>
-          ${tablaVisitasHTML('tablaMes', 'mesVacia')}
         </div>`;
 
       cargarDatosAsesor();
@@ -2783,6 +2874,7 @@
         if (semanaStatus) semanaStatus.style.display = 'none';
         document.getElementById('kpiPersonasVal').textContent = kpi?.TotalVisitas ?? 0;
         document.getElementById('kpiConfirmadasVal').textContent = kpi?.VisitasConfirmadas ?? 0;
+        document.getElementById('kpiNoEfectivasVal').textContent = kpi?.VisitasNoEfectivas ?? 0;
         llenarTabla('tablaSemana', 'semanaVacia', visitas, true);
       }
 
@@ -2795,6 +2887,74 @@
         if (mesStatus) mesStatus.style.display = 'none';
         llenarTabla('tablaMes', 'mesVacia', visitas, true);
       }
+    }
+
+    function _asesorTab(tab) {
+      document.getElementById('asesorTabVisitas').style.display  = tab === 'visitas'  ? '' : 'none';
+      document.getElementById('asesorTabCompras').style.display  = tab === 'compras'  ? '' : 'none';
+      document.getElementById('asesorSubTabVisitasBtn').classList.toggle('active', tab === 'visitas');
+      document.getElementById('asesorSubTabComprasBtn').classList.toggle('active', tab === 'compras');
+      if (tab === 'compras') cargarMisCompras();
+    }
+
+    function _badgeBeneficio(estado) {
+      if (estado === 'Aceptado') {
+        return `<span style="color:var(--green);font-size:1.2rem;font-weight:700" title="Aceptado">✓</span>`;
+      }
+      const label = estado
+        ? `<span style="font-size:.72rem;color:var(--muted);margin-left:4px">${estado}</span>`
+        : `<span style="font-size:.72rem;color:var(--muted);margin-left:4px">Sin beneficio</span>`;
+      return `<span style="color:var(--red);font-size:1.2rem;font-weight:700" title="${estado || 'Sin beneficio'}">✗</span>${label}`;
+    }
+
+    function _badgeEstadoCompra(estado) {
+      const map = {
+        'Pendiente':  ['var(--yellow)',  '#000'],
+        'Completada': ['var(--green)',   '#000'],
+        'Cancelada':  ['var(--red)',     '#fff'],
+      };
+      const [bg, color] = map[estado] || ['var(--surface2)', 'var(--muted)'];
+      return `<span style="background:${bg};color:${color};padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:600">${estado || '—'}</span>`;
+    }
+
+    async function cargarMisCompras() {
+      const statusEl = document.getElementById('misComprasStatus');
+      const tabla    = document.getElementById('tablaMisCompras');
+      const vacia    = document.getElementById('misComprasVacia');
+      const tbody    = document.getElementById('tablaMisComprasBody');
+      if (!statusEl) return;
+
+      statusEl.className = 'status-bar status-loading';
+      statusEl.innerHTML = '<span class="spinner"></span> Cargando compras...';
+      statusEl.style.display = 'block';
+      tabla.style.display = 'none';
+      vacia.style.display = 'none';
+
+      const r = await apiFetch('/api/telemercadeo/compras/mis-compras');
+      if (!r || !r.ok) {
+        statusEl.className = 'status-bar status-error';
+        statusEl.textContent = '❌ Error al cargar compras';
+        return;
+      }
+      const compras = await r.json();
+      statusEl.style.display = 'none';
+
+      if (!compras.length) {
+        vacia.style.display = 'block';
+        return;
+      }
+      tabla.style.display = '';
+      tbody.innerHTML = compras.map(c => `<tr>
+        <td style="font-size:.88rem">${c.NombreCliente || '—'}</td>
+        <td style="font-size:.8rem;color:var(--muted);max-width:180px">${c.Productos || '—'}</td>
+        <td style="white-space:nowrap;font-size:.85rem">${fmtFecha(c.FechaCompra)}</td>
+        <td style="text-align:right;font-weight:600;color:var(--green);white-space:nowrap">
+          $${Number(c.TotalCompra).toLocaleString('es-CO')}
+        </td>
+        <td style="text-align:center">${_badgeEstadoCompra(c.EstadoCompra)}</td>
+        <td style="text-align:center">${_badgeBeneficio(c.EstadoBeneficio)}</td>
+        <td style="text-align:center;font-size:.8rem;color:var(--muted)">${c.FormaPago?.replace(/_/g,' ') || '—'}</td>
+      </tr>`).join('');
     }
 
     // ── Modal cambiar estado de visita ─────────────────────────────────────────
@@ -2812,6 +2972,7 @@
       _cambiarEstadoCtx = { visitaId, estadoNuevo: null };
       document.getElementById('estadoActualLabel').textContent = estadoActual || 'Sin estado';
       document.getElementById('cambiarEstadoStatus').innerHTML = '';
+      document.getElementById('cambiarEstadoNotas').value = '';
       document.getElementById('seccionAlimentacion').style.display = 'none';
       document.getElementById('alimentacionOpciones').innerHTML = '';
       document.getElementById('alimentacionBuscar').value = '';
@@ -2899,13 +3060,19 @@
           }))
         : [];
 
+      const notas = document.getElementById('cambiarEstadoNotas').value.trim();
+      if (!notas) {
+        setStatus('cambiarEstadoStatus', 'error', '❌ Las notas son obligatorias');
+        return;
+      }
+
       const btn = document.getElementById('btnConfirmarEstado');
       btn.disabled = true;
       btn.textContent = 'Guardando...';
 
       const r = await apiFetch('/api/telemercadeo/visitas/estado', {
         method: 'POST',
-        body: JSON.stringify({ visitaId, estado, suplementos }),
+        body: JSON.stringify({ visitaId, estado, suplementos, notas }),
       });
 
       btn.disabled = false;
@@ -3047,9 +3214,11 @@
     let _compraCtx  = { personaId: null, tipoPersona: null, cedulaCliente: null };
     let _cochinaItems = [];
     let _compraItems  = []; // [{inventarioId, nombre, precio, cantidad, stock}]
+    let _referidos    = []; // [{nombre, celular, direccion}]
 
     function cerrarNuevaCompra() {
       document.getElementById('modalNuevaCompra').classList.remove('open');
+      _resetReferidos();
     }
     function cerrarNuevaCompraSiOverlay(e) {
       if (e.target === document.getElementById('modalNuevaCompra')) cerrarNuevaCompra();
@@ -3059,6 +3228,7 @@
       _compraCtx   = { personaId: null, tipoPersona: 'libre', cedulaCliente: null };
       _compraItems = [];
       _cochinaItems = [];
+      _resetReferidos();
 
       document.getElementById('compraModalTitulo').textContent = 'Nueva venta';
       document.getElementById('compraStatus').innerHTML = '';
@@ -3083,6 +3253,7 @@
       _compraCtx   = { personaId, tipoPersona, cedulaCliente: null };
       _compraItems = [];
       _cochinaItems = [];
+      _resetReferidos();
 
       document.getElementById('compraModalTitulo').textContent = `Nueva compra — ${nombre}`;
       document.getElementById('compraStatus').innerHTML = '';
@@ -3253,6 +3424,69 @@
       document.getElementById('compraTotalVal').textContent = '$' + total.toLocaleString('es-CO');
     }
 
+    // ── Beneficio 4x14 ────────────────────────────────────────────────────────
+
+    function _resetReferidos() {
+      _referidos = [];
+      document.getElementById('chkBeneficio4x14').checked = false;
+      document.getElementById('panelReferidos').style.display = 'none';
+      _renderizarReferidos();
+    }
+
+    function _toggleBeneficio4x14() {
+      const checked = document.getElementById('chkBeneficio4x14').checked;
+      document.getElementById('panelReferidos').style.display = checked ? '' : 'none';
+      if (!checked) { _referidos = []; _renderizarReferidos(); }
+    }
+
+    function _agregarReferido() {
+      _referidos.push({ nombre: '', celular: '', direccion: '' });
+      _renderizarReferidos();
+    }
+
+    function _quitarReferido(idx) {
+      _referidos.splice(idx, 1);
+      _renderizarReferidos();
+    }
+
+    function _actualizarReferido(idx, campo, valor) {
+      if (_referidos[idx]) _referidos[idx][campo] = valor;
+    }
+
+    function _renderizarReferidos() {
+      const lista    = document.getElementById('referidosLista');
+      const vacio    = document.getElementById('referidosVacio');
+      const contador = document.getElementById('referidosContador');
+      const n = _referidos.length;
+      contador.textContent = `(${n} / mín. 10)`;
+      contador.style.color = n >= 10 ? 'var(--green)' : 'var(--accent2)';
+      if (!n) {
+        lista.innerHTML = '';
+        vacio.style.display = 'block';
+        return;
+      }
+      vacio.style.display = 'none';
+      lista.innerHTML = _referidos.map((r, i) => `
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:center;
+          padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px">
+          <input type="text" placeholder="Nombre *" value="${r.nombre.replace(/"/g,'&quot;')}"
+            oninput="_actualizarReferido(${i},'nombre',this.value)"
+            style="padding:5px 8px;border-radius:6px;border:1px solid var(--border);
+              background:var(--surface2);color:var(--text);font-size:.82rem;outline:none" />
+          <input type="text" placeholder="Celular *" value="${r.celular.replace(/"/g,'&quot;')}"
+            oninput="_actualizarReferido(${i},'celular',this.value)"
+            style="padding:5px 8px;border-radius:6px;border:1px solid var(--border);
+              background:var(--surface2);color:var(--text);font-size:.82rem;outline:none" />
+          <input type="text" placeholder="Dirección *" value="${r.direccion.replace(/"/g,'&quot;')}"
+            oninput="_actualizarReferido(${i},'direccion',this.value)"
+            style="padding:5px 8px;border-radius:6px;border:1px solid var(--border);
+              background:var(--surface2);color:var(--text);font-size:.82rem;outline:none" />
+          <button onclick="_quitarReferido(${i})"
+            style="background:transparent;border:none;color:var(--red);cursor:pointer;
+              font-size:1rem;padding:2px 6px;border-radius:4px" title="Quitar">✕</button>
+        </div>`).join('');
+    }
+
     async function registrarCompra() {
       const formaPago = document.getElementById('compraFormaPago').value;
       const notas     = document.getElementById('compraNotas').value.trim();
@@ -3336,12 +3570,30 @@
         return;
       }
 
+      // Validar Beneficio 4x14
+      const aplicaBeneficio = document.getElementById('chkBeneficio4x14').checked;
+      if (aplicaBeneficio) {
+        if (_referidos.length < 10) {
+          setStatus('compraStatus', 'error', `❌ Debes agregar mínimo 10 referidos (tienes ${_referidos.length})`);
+          btn.disabled = false;
+          return;
+        }
+        if (_referidos.some(r => !r.nombre.trim() || !r.celular.trim() || !r.direccion.trim())) {
+          setStatus('compraStatus', 'error', '❌ Todos los referidos deben tener nombre, celular y dirección');
+          btn.disabled = false;
+          return;
+        }
+      }
+
       btn.textContent = 'Guardando...';
       const items = _compraItems.map(i => ({ inventarioId: i.inventarioId, cantidad: i.cantidad }));
+      const referidos = aplicaBeneficio
+        ? _referidos.map(r => ({ nombre: r.nombre.trim(), celular: r.celular.trim() || null, direccion: r.direccion.trim() || null }))
+        : null;
 
       const r = await apiFetch('/api/telemercadeo/compras/nueva', {
         method: 'POST',
-        body: JSON.stringify({ cedulaCliente, formaPago, notas, items }),
+        body: JSON.stringify({ cedulaCliente, formaPago, notas, items, referidos }),
       });
 
       btn.disabled = false; btn.textContent = 'Registrar compra';

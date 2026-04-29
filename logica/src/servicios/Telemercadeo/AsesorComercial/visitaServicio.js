@@ -48,8 +48,8 @@ async function obtenerAlimentacion() {
     return visita.inventarioAlimentacion();
 }
 
-async function cambiarEstado(visitaId, estado, suplementos = [], auditCtx = {}) {
-    await visita.cambiarEstado(visitaId, estado);
+async function cambiarEstado(visitaId, estado, suplementos = [], auditCtx = {}, notas = null) {
+    await visita.cambiarEstado(visitaId, estado, notas);
     if (estado === 'Visitado' && suplementos.length > 0) {
         try {
             await visita.guardarSuplemento(visitaId, suplementos, auditCtx.actor);
