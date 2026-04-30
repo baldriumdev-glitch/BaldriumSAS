@@ -60,4 +60,44 @@ router.get('/mis-compras', async (req, res) => {
     }
 });
 
+router.get('/mis-compras/semana', async (req, res) => {
+    try {
+        const { cedula, inicio, fin } = req.query;
+        const rows = await repo.listarComprasTrabajadorSemana(cedula, inicio, fin);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/mis-compras/mes', async (req, res) => {
+    try {
+        const { cedula, anio, mes } = req.query;
+        const rows = await repo.listarComprasTrabajadorMes(cedula, Number(anio), Number(mes));
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/mis-compras/buscar', async (req, res) => {
+    try {
+        const { cedula, q = '' } = req.query;
+        const rows = await repo.buscarComprasTrabajador(cedula, q);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/mis-compras/kpi-mes', async (req, res) => {
+    try {
+        const { cedula, anio, mes } = req.query;
+        const kpi = await repo.kpiComprasMes(cedula, Number(anio), Number(mes));
+        res.json(kpi);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 module.exports = router;

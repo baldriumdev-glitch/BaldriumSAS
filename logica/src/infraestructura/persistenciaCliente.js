@@ -117,6 +117,18 @@ const compra = {
 
     listarComprasTrabajador: (cedula) =>
         _req('GET', `/compras/mis-compras?cedula=${encodeURIComponent(cedula)}`),
+
+    listarComprasTrabajadorSemana: (cedula, inicio, fin) =>
+        _req('GET', `/compras/mis-compras/semana?cedula=${encodeURIComponent(cedula)}&inicio=${inicio}&fin=${fin}`),
+
+    listarComprasTrabajadorMes: (cedula, anio, mes) =>
+        _req('GET', `/compras/mis-compras/mes?cedula=${encodeURIComponent(cedula)}&anio=${anio}&mes=${mes}`),
+
+    kpiComprasMes: (cedula, anio, mes) =>
+        _req('GET', `/compras/mis-compras/kpi-mes?cedula=${encodeURIComponent(cedula)}&anio=${anio}&mes=${mes}`),
+
+    buscarComprasTrabajador: (cedula, q) =>
+        _req('GET', `/compras/mis-compras/buscar?cedula=${encodeURIComponent(cedula)}&q=${encodeURIComponent(q)}`),
 };
 
 // ─── Visitas ─────────────────────────────────────────────────────────────────

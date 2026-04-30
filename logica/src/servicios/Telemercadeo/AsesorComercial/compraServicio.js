@@ -24,4 +24,36 @@ async function listarComprasTrabajador(cedula) {
     return compra.listarComprasTrabajador(cedula);
 }
 
-module.exports = { inventarioCocina, clientePorPersona, crearClienteDesdeProspecto, crearCompra, registrarClienteLibre, listarComprasTrabajador };
+function _semanaActual() {
+    const hoy = new Date();
+    const dia = hoy.getDay();
+    const lunes = new Date(hoy);
+    lunes.setDate(hoy.getDate() - (dia === 0 ? 6 : dia - 1));
+    const domingo = new Date(lunes);
+    domingo.setDate(lunes.getDate() + 6);
+    return {
+        inicio: lunes.toISOString().split('T')[0],
+        fin:    domingo.toISOString().split('T')[0],
+    };
+}
+
+async function listarComprasTrabajadorSemana(cedula) {
+    const { inicio, fin } = _semanaActual();
+    return compra.listarComprasTrabajadorSemana(cedula, inicio, fin);
+}
+
+async function listarComprasTrabajadorMes(cedula) {
+    const hoy = new Date();
+    return compra.listarComprasTrabajadorMes(cedula, hoy.getFullYear(), hoy.getMonth() + 1);
+}
+
+async function kpiComprasMes(cedula) {
+    const hoy = new Date();
+    return compra.kpiComprasMes(cedula, hoy.getFullYear(), hoy.getMonth() + 1);
+}
+
+async function buscarComprasTrabajador(cedula, q) {
+    return compra.buscarComprasTrabajador(cedula, q);
+}
+
+module.exports = { inventarioCocina, clientePorPersona, crearClienteDesdeProspecto, crearCompra, registrarClienteLibre, listarComprasTrabajador, listarComprasTrabajadorSemana, listarComprasTrabajadorMes, kpiComprasMes, buscarComprasTrabajador };

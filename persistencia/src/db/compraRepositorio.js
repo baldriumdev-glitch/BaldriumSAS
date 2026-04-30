@@ -214,27 +214,77 @@ async function registrarClienteLibre(datos, auditCtx = {}) {
     }
 }
 
+const _comprasBase = `
+  SELECT
+    co.ID, co.FechaCompra, co.TotalCompra, co.EstadoCompra, co.FormaPago,
+    c.Nombre AS NombreCliente,
+    GROUP_CONCAT(DISTINCT inv.Nombre ORDER BY inv.Nombre SEPARATOR ', ') AS Productos,
+    (SELECT b.EstadoBeneficio FROM beneficio b WHERE b.CompraID = co.ID LIMIT 1) AS EstadoBeneficio
+  FROM compra co
+  JOIN cliente c ON c.Cedula = co.CedulaCliente
+  LEFT JOIN compra_inventario ci ON ci.CompraID = co.ID
+  LEFT JOIN inventario inv ON inv.ID = ci.InventarioID
+`;
+
 async function listarComprasTrabajador(cedulaTrabajador) {
     const [rows] = await pool.query(
-        `SELECT
-           co.ID,
-           co.FechaCompra,
-           co.TotalCompra,
-           co.EstadoCompra,
-           co.FormaPago,
-           c.Nombre AS NombreCliente,
-           GROUP_CONCAT(DISTINCT inv.Nombre ORDER BY inv.Nombre SEPARATOR ', ') AS Productos,
-           (SELECT b.EstadoBeneficio FROM beneficio b WHERE b.CompraID = co.ID LIMIT 1) AS EstadoBeneficio
-         FROM compra co
-         JOIN cliente c ON c.Cedula = co.CedulaCliente
-         LEFT JOIN compra_inventario ci ON ci.CompraID = co.ID
-         LEFT JOIN inventario inv ON inv.ID = ci.InventarioID
-         WHERE co.CedulaTrabajador = ?
-         GROUP BY co.ID
-         ORDER BY co.FechaCompra DESC`,
+        `${_comprasBase} WHERE co.CedulaTrabajador = ? GROUP BY co.ID ORDER BY co.FechaCompra DESC`,
         [cedulaTrabajador]
     );
     return rows;
 }
 
-module.exports = { inventarioCocina, clientePorPersona, crearClienteDesdeProspecto, crearCompra, registrarClienteLibre, listarComprasTrabajador };
+async function listarComprasTrabajadorSemana(cedulaTrabajador, inicio, fin) {
+    const [rows] = await pool.query(
+        `${_comprasBase} WHERE co.CedulaTrabajador = ? AND DATE(co.FechaCompra) BETWEEN ? AND ?
+         GROUP BY co.ID ORDER BY co.FechaCompra DESC`,
+        [cedulaTrabajador, inicio, fin]
+    );
+    return rows;
+}
+
+async function listarComprasTrabajadorMes(cedulaTrabajador, anio, mes) {
+    const [rows] = await pool.query(
+        `${_comprasBase} WHERE co.CedulaTrabajador = ?
+           AND YEAR(co.FechaCompra) = ? AND MONTH(co.FechaCompra) = ?
+         GROUP BY co.ID ORDER BY co.FechaCompra DESC`,
+        [cedulaTrabajador, anio, mes]
+    );
+    return rows;
+}
+
+async function kpiComprasMes(cedulaTrabajador, anio, mes) {
+    const [[kpi]] = await pool.query(
+        `SELECT
+           COUNT(*) AS NumeroVentas,
+           COALESCE(SUM(CASE WHEN EstadoCompra = 'Completada' THEN TotalCompra ELSE 0 END), 0) AS ValorVentasConfirmadas
+         FROM compra
+         WHERE CedulaTrabajador = ?
+           AND YEAR(FechaCompra) = ? AND MONTH(FechaCompra) = ?`,
+        [cedulaTrabajador, anio, mes]
+    );
+    return kpi;
+}
+
+async function buscarComprasTrabajador(cedulaTrabajador, q) {
+    const like = `%${q}%`;
+    const [rows] = await pool.query(
+        `${_comprasBase}
+         WHERE co.CedulaTrabajador = ?
+           AND (
+             c.Nombre LIKE ?
+             OR DATE_FORMAT(co.FechaCompra, '%d/%m/%Y') LIKE ?
+             OR co.EstadoCompra LIKE ?
+             OR EXISTS (
+               SELECT 1 FROM compra_inventario ci2
+               JOIN inventario inv2 ON inv2.ID = ci2.InventarioID
+               WHERE ci2.CompraID = co.ID AND inv2.Nombre LIKE ?
+             )
+           )
+         GROUP BY co.ID ORDER BY co.FechaCompra DESC`,
+        [cedulaTrabajador, like, like, like, like]
+    );
+    return rows;
+}
+
+module.exports = { inventarioCocina, clientePorPersona, crearClienteDesdeProspecto, crearCompra, registrarClienteLibre, listarComprasTrabajador, listarComprasTrabajadorSemana, listarComprasTrabajadorMes, kpiComprasMes, buscarComprasTrabajador };

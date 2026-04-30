@@ -1,0 +1,93 @@
+/* ── Estilos específicos de la página de login ── */
+:root { --radius: 14px; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -250px; left: -250px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(108,99,255,.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -200px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(167,139,250,.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.login-card {
+  width: 100%; max-width: 430px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 44px 40px;
+  position: relative; z-index: 1;
+}
+
+.brand { text-align: center; margin-bottom: 36px; }
+
+.brand-logo {
+  width: 60px; height: 60px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 16px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 26px; margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(108,99,255,.3);
+}
+
+.brand h1 {
+  font-size: 1.55rem; font-weight: 700;
+  letter-spacing: -.02em; margin-bottom: 6px;
+}
+
+.brand p { font-size: .85rem; color: var(--muted); line-height: 1.5; }
+
+/* Ajustes de input/label para login */
+label { margin-top: 18px; margin-bottom: 6px; font-size: .82rem; }
+
+input {
+  padding: 12px 14px; border-radius: 9px; font-size: .9rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+input:focus { box-shadow: 0 0 0 3px rgba(108,99,255,.12); }
+
+.status-bar { margin-top: 18px; }
+
+.btn-primary {
+  display: block; width: 100%;
+  margin-top: 20px; padding: 13px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff; border: none; border-radius: 9px;
+  font-family: inherit; font-size: .92rem; font-weight: 600;
+  cursor: pointer;
+  transition: opacity .2s, transform .1s;
+  box-shadow: 0 4px 16px rgba(108,99,255,.25);
+}
+.btn-primary:hover   { opacity: .88; }
+.btn-primary:active  { transform: scale(.98); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+.btn-ghost {
+  display: block; width: 100%;
+  margin-top: 10px; padding: 11px;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted); border-radius: 9px;
+  font-family: inherit; font-size: .88rem; font-weight: 500;
+  cursor: pointer; transition: border-color .2s, color .2s;
+}
+.btn-ghost:hover { border-color: var(--yellow); color: var(--yellow); }
+
+/* Modal login: tamaño reducido */
+.modal { max-width: 400px; transform: translateY(20px) scale(.97); }

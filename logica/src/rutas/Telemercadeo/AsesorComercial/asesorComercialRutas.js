@@ -97,6 +97,43 @@ router.get('/compras/mis-compras', async (req, res) => {
     }
 });
 
+router.get('/compras/mis-compras/semana', async (req, res) => {
+    try {
+        const result = await compraSvc.listarComprasTrabajadorSemana(req.usuario.cedula);
+        res.json(result);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/compras/mis-compras/mes', async (req, res) => {
+    try {
+        const result = await compraSvc.listarComprasTrabajadorMes(req.usuario.cedula);
+        res.json(result);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/compras/mis-compras/buscar', async (req, res) => {
+    try {
+        const { q = '' } = req.query;
+        const result = await compraSvc.buscarComprasTrabajador(req.usuario.cedula, q);
+        res.json(result);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/compras/mis-compras/kpi-mes', async (req, res) => {
+    try {
+        const result = await compraSvc.kpiComprasMes(req.usuario.cedula);
+        res.json(result);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 router.get('/compras/inventario-cocina', async (_req, res) => {
     try {
         const items = await compraSvc.inventarioCocina();
