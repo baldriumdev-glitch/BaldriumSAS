@@ -107,13 +107,13 @@ const compra = {
         _req('GET', `/compras/cliente-por-persona?personaId=${personaId}`),
 
     crearClienteDesdeProspecto: (personaId, datos, auditCtx) =>
-        _req('POST', '/compras/crear-cliente', { personaId, auditCtx, ...datos }),
+        _req('POST', '/compras/crear-cliente', { personaId, auditCtx, ...datos }), //crea cliente cuando es prospecto
 
     crearCompra: (cedulaCliente, actor, formaPago, notas, items, referidos, auditCtx) =>
-        _req('POST', '/compras/nueva', { cedulaCliente, actor, formaPago, notas, items, referidos, auditCtx }),
+        _req('POST', '/compras/nueva', { cedulaCliente, actor, formaPago, notas, items, referidos, auditCtx }), // crear compra prospecto
 
     registrarClienteLibre: (datos, auditCtx) =>
-        _req('POST', '/compras/cliente-libre', { auditCtx, ...datos }),
+        _req('POST', '/compras/cliente-libre', { auditCtx, ...datos }), // crear compra de 0
 
     listarComprasTrabajador: (cedula) =>
         _req('GET', `/compras/mis-compras?cedula=${encodeURIComponent(cedula)}`),

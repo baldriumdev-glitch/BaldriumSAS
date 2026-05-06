@@ -21,7 +21,7 @@ async function registrarClienteLibre(datos, auditCtx) {
 }
 
 async function listarComprasTrabajador(cedula) {
-    return compra.listarComprasTrabajador(cedula);
+    return compra.listarComprasTrabajador(Number(cedula));
 }
 
 function _semanaActual() {
@@ -39,21 +39,32 @@ function _semanaActual() {
 
 async function listarComprasTrabajadorSemana(cedula) {
     const { inicio, fin } = _semanaActual();
-    return compra.listarComprasTrabajadorSemana(cedula, inicio, fin);
+    return compra.listarComprasTrabajadorSemana(Number(cedula), inicio, fin);
 }
 
 async function listarComprasTrabajadorMes(cedula) {
     const hoy = new Date();
-    return compra.listarComprasTrabajadorMes(cedula, hoy.getFullYear(), hoy.getMonth() + 1);
+    return compra.listarComprasTrabajadorMes(Number(cedula), hoy.getFullYear(), hoy.getMonth() + 1);
 }
 
 async function kpiComprasMes(cedula) {
     const hoy = new Date();
-    return compra.kpiComprasMes(cedula, hoy.getFullYear(), hoy.getMonth() + 1);
+    return compra.kpiComprasMes(Number(cedula), hoy.getFullYear(), hoy.getMonth() + 1);
 }
 
 async function buscarComprasTrabajador(cedula, q) {
-    return compra.buscarComprasTrabajador(cedula, q);
+    return compra.buscarComprasTrabajador(Number(cedula), q);
 }
 
-module.exports = { inventarioCocina, clientePorPersona, crearClienteDesdeProspecto, crearCompra, registrarClienteLibre, listarComprasTrabajador, listarComprasTrabajadorSemana, listarComprasTrabajadorMes, kpiComprasMes, buscarComprasTrabajador };
+module.exports = {
+    inventarioCocina,
+    clientePorPersona,
+    crearClienteDesdeProspecto,
+    crearCompra,
+    registrarClienteLibre,
+    listarComprasTrabajador,
+    listarComprasTrabajadorSemana,
+    listarComprasTrabajadorMes,
+    kpiComprasMes,
+    buscarComprasTrabajador
+};
