@@ -217,6 +217,7 @@ async function registrarClienteLibre(datos, auditCtx = {}) {
 const _comprasBase = `
   SELECT
     co.ID, co.FechaCompra, co.TotalCompra, co.EstadoCompra, co.FormaPago,
+    co.CedulaCliente,
     c.Nombre AS NombreCliente,
     GROUP_CONCAT(DISTINCT inv.Nombre ORDER BY inv.Nombre SEPARATOR ', ') AS Productos,
     (SELECT b.EstadoBeneficio FROM beneficio b WHERE b.CompraID = co.ID LIMIT 1) AS EstadoBeneficio
@@ -272,7 +273,9 @@ async function buscarComprasTrabajador(cedulaTrabajador, q) {
         `${_comprasBase}
          WHERE co.CedulaTrabajador = ?
            AND (
-             c.Nombre LIKE ?
+             CAST(co.ID AS CHAR) LIKE ?
+             OR co.CedulaCliente LIKE ?
+             OR c.Nombre LIKE ?
              OR DATE_FORMAT(co.FechaCompra, '%d/%m/%Y') LIKE ?
              OR co.EstadoCompra LIKE ?
              OR EXISTS (
@@ -282,7 +285,7 @@ async function buscarComprasTrabajador(cedulaTrabajador, q) {
              )
            )
          GROUP BY co.ID ORDER BY co.FechaCompra DESC`,
-        [cedulaTrabajador, like, like, like, like]
+        [cedulaTrabajador, like, like, like, like, like, like]
     );
     return rows;
 }

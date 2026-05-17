@@ -12,7 +12,7 @@ const { verificarToken } = require('./seguridad/jwtMiddleware');
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:4200',
+  origin: ['http://localhost:4000', 'http://localhost:4200'],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true

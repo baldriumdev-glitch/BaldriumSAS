@@ -59,40 +59,43 @@ async function registrarInventario({
 }
 
 async function listarInventario(limite = 400) {
-    const lim = parseInt(limite, 10) || 400;
+    const lim = Math.min(Math.max(parseInt(limite, 10) || 400, 1), 1000);
     const [rows] = await pool.query(
         `SELECT ID, InventarioID, NombreProducto, CedulaResponsable, NombreResponsable,
                 TipoMovimiento, CantidadAnterior, CantidadMovimiento, CantidadPosterior,
                 ValorUnitario, Motivo, ReferenciaID, TablaReferencia, Observaciones, FechaHora
          FROM auditoria_inventario
          ORDER BY FechaHora DESC
-         LIMIT ${lim}`
+         LIMIT ?`,
+        [lim]
     );
     return rows;
 }
 
 async function listarSistema(limite = 400) {
-    const lim = parseInt(limite, 10) || 400;
+    const lim = Math.min(Math.max(parseInt(limite, 10) || 400, 1), 1000);
     const [rows] = await pool.query(
         `SELECT ID, CedulaTrabajador, NombreTrabajador, TipoAccion, TablaAfectada,
                 ValorAnterior, ValorNuevo, DireccionIP, Dispositivo, Resultado, Descripcion, FechaHora
          FROM auditoria_sistema
          WHERE TablaAfectada != 'inventario' OR TablaAfectada IS NULL
          ORDER BY FechaHora DESC
-         LIMIT ${lim}`
+         LIMIT ?`,
+        [lim]
     );
     return rows;
 }
 
 async function listarSistemaInventario(limite = 400) {
-    const lim = parseInt(limite, 10) || 400;
+    const lim = Math.min(Math.max(parseInt(limite, 10) || 400, 1), 1000);
     const [rows] = await pool.query(
         `SELECT CedulaTrabajador AS CedulaResponsable, NombreTrabajador AS NombreResponsable,
                 TipoAccion, Descripcion, ValorAnterior, ValorNuevo, FechaHora, RegistroAfectadoID
          FROM auditoria_sistema
          WHERE TablaAfectada = 'inventario'
          ORDER BY FechaHora DESC
-         LIMIT ${lim}`
+         LIMIT ?`,
+        [lim]
     );
     return rows;
 }

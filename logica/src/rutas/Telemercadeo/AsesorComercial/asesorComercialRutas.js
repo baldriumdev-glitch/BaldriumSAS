@@ -99,7 +99,6 @@ router.get('/compras/mis-compras', async (req, res) => {
 
 router.get('/compras/mis-compras/semana', async (req, res) => {
     try {
-        console.log('[DEBUG] req.usuario:', req.usuario);
         const result = await compraSvc.listarComprasTrabajadorSemana(req.usuario.cedula);
         res.json(result);
     } catch (e) {
