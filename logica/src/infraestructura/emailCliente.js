@@ -11,7 +11,11 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const IMAGES_DIR = path.resolve(__dirname, '../../../../../Downloads/baldrium-frontend/public/images');
+// El logo vive dentro del propio backend (src/assets), así que ya no depende
+// de que exista una carpeta del frontend en una ruta específica del equipo.
+// Se puede sobreescribir con la variable de entorno LOGO_PATH si se necesita
+// apuntar a otro archivo (por ejemplo en producción).
+const LOGO_PATH = process.env.LOGO_PATH || path.resolve(__dirname, '../assets/logo-baldrium.png');
 
 async function enviarContrasenaTemp(destinatario, nombre, contrasenaTemp) {
   const mailOptions = {
@@ -21,7 +25,7 @@ async function enviarContrasenaTemp(destinatario, nombre, contrasenaTemp) {
     attachments: [
       {
         filename: 'logo.png',
-        path: path.join(IMAGES_DIR, 'logo-baldrium.png'),
+        path: LOGO_PATH,
         cid: 'logo_baldrium',
       },
     ],
