@@ -20,6 +20,26 @@ router.get('/buscar', async (req, res) => {
     res.json(rows);
 });
 
+router.get('/semana/visitadas', async (req, res) => {
+    try {
+        const { inicio, fin } = req.query;
+        const rows = await repo.listarSemanaVisitadas(inicio, fin);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/semana/por-gestionar', async (req, res) => {
+    try {
+        const { inicio, fin } = req.query;
+        const rows = await repo.listarSemanaPorGestionar(inicio, fin);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 router.get('/kpi', async (req, res) => {
     const { cedula, inicio, fin } = req.query;
     const kpi = await repo.kpiSemana(cedula, inicio, fin);

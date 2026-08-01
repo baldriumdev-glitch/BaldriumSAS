@@ -163,6 +163,22 @@ const visita = {
 
     guardarSuplemento: (visitaId, suplementos, actor) =>
         _req('POST', '/visitas/suplemento', { visitaId, suplementos, actor }),
+
+    listarSemanaVisitadas: (inicio, fin) =>
+        _req('GET', `/visitas/semana/visitadas?inicio=${inicio}&fin=${fin}`),
+
+    listarSemanaPorGestionar: (inicio, fin) =>
+        _req('GET', `/visitas/semana/por-gestionar?inicio=${inicio}&fin=${fin}`),
 };
 
-module.exports = { trabajador, inventario, auditoria, visita, compra };
+// ─── Prospectos ──────────────────────────────────────────────────────────────
+
+const prospecto = {
+    listarPendientes: () =>
+        _req('GET', '/prospectos/pendientes'),
+
+    listarEnGestion: () =>
+        _req('GET', '/prospectos/en-gestion'),
+};
+
+module.exports = { trabajador, inventario, auditoria, visita, compra, prospecto };

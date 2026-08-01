@@ -2,14 +2,11 @@ const pool = require('./db');
 
 const _cols = `
   v.ID, v.PersonaID, v.FechaVisita, v.CantidadPersonas, v.Notas,
+  v.Estado, v.FechaActualizacion AS UltimaInteraccion,
   p.TipoPersona,
   COALESCE(c.Nombre, cp.Nombre)       AS NombrePersona,
   COALESCE(c.Celular, cp.Celular)     AS Celular,
-  COALESCE(c.Direccion, cp.Direccion) AS Direccion,
-  (SELECT Estado FROM visita_estado WHERE VisitaID = v.ID
-   ORDER BY ID DESC LIMIT 1) AS Estado,
-  (SELECT FechaActualizacion FROM visita_estado WHERE VisitaID = v.ID
-   ORDER BY ID DESC LIMIT 1) AS UltimaInteraccion
+  COALESCE(c.Direccion, cp.Direccion) AS Direccion
 `;
 
 const _joins = `
@@ -23,9 +20,7 @@ async function listarSemana(cedula, fechaInicio, fechaFin) {
         `SELECT ${_cols} FROM visita v ${_joins}
          WHERE v.CedulaTrabajador = ? AND v.FechaVisita BETWEEN ? AND ?
          ORDER BY
-           CASE (SELECT Estado FROM visita_estado WHERE VisitaID = v.ID ORDER BY ID DESC LIMIT 1)
-             WHEN 'Pendiente' THEN 0 ELSE 1
-           END,
+           CASE v.Estado WHEN 'Pendiente' THEN 0 ELSE 1 END,
            CASE WHEN DATE(v.FechaVisita) = CURDATE() THEN 0 ELSE 1 END,
            v.FechaVisita ASC`,
         [cedula, fechaInicio, fechaFin]
@@ -52,8 +47,7 @@ async function buscar(cedula, q) {
            AND (
              COALESCE(c.Nombre, cp.Nombre) LIKE ?
              OR DATE_FORMAT(v.FechaVisita, '%d/%m/%Y') LIKE ?
-             OR (SELECT Estado FROM visita_estado WHERE VisitaID = v.ID
-                 ORDER BY ID DESC LIMIT 1) LIKE ?
+             OR v.Estado LIKE ?
            )
          ORDER BY v.FechaVisita DESC`,
         [cedula, like, like, like]
@@ -66,14 +60,8 @@ async function kpiSemana(cedula, fechaInicio, fechaFin) {
         `SELECT
            COALESCE(SUM(v.CantidadPersonas), 0) AS PersonasTotales,
            COUNT(*) AS TotalVisitas,
-           SUM(CASE WHEN
-             (SELECT Estado FROM visita_estado WHERE VisitaID = v.ID
-              ORDER BY ID DESC LIMIT 1) = 'Visitado'
-           THEN 1 ELSE 0 END) AS VisitasConfirmadas,
-           SUM(CASE WHEN
-             (SELECT Estado FROM visita_estado WHERE VisitaID = v.ID
-              ORDER BY ID DESC LIMIT 1) IN ('No contesta', 'Rechaza')
-           THEN 1 ELSE 0 END) AS VisitasNoEfectivas
+           SUM(CASE WHEN v.Estado = 'Visitado' THEN 1 ELSE 0 END) AS VisitasConfirmadas,
+           SUM(CASE WHEN v.Estado IN ('No contesta', 'Rechaza') THEN 1 ELSE 0 END) AS VisitasNoEfectivas
          FROM visita v
          WHERE v.CedulaTrabajador = ? AND v.FechaVisita BETWEEN ? AND ?`,
         [cedula, fechaInicio, fechaFin]
@@ -124,45 +112,69 @@ async function historialCompras(personaId) {
 async function historialVisitas(personaId) {
     const [visitas] = await pool.query(
         `SELECT v.ID, v.FechaVisita, v.CantidadPersonas, v.Notas,
-           t.Nombre AS Asesor,
-           (SELECT Estado FROM visita_estado WHERE VisitaID = v.ID
-            ORDER BY ID DESC LIMIT 1) AS Estado
+           t.Nombre AS Asesor, v.Estado
          FROM visita v
          LEFT JOIN trabajador t ON t.Cedula = v.CedulaTrabajador
          WHERE v.PersonaID = ?
          ORDER BY
-           CASE (SELECT Estado FROM visita_estado WHERE VisitaID = v.ID ORDER BY ID DESC LIMIT 1)
-             WHEN 'Pendiente' THEN 0 ELSE 1
-           END,
+           CASE v.Estado WHEN 'Pendiente' THEN 0 ELSE 1 END,
            v.FechaVisita DESC`,
         [personaId]
     );
     return visitas;
 }
 
-const ESTADOS_VALIDOS = ['Pendiente', 'Visitado', 'No contesta', 'Rechaza'];
+const ESTADOS_VALIDOS = ['Pendiente', 'Visitado', 'No contesta', 'Rechaza', 'Re agendada'];
+
+const _colsConTrabajador = `
+  v.ID, v.PersonaID, v.FechaVisita, v.CantidadPersonas, v.Notas,
+  v.CedulaTrabajador,
+  t.Nombre AS NombreTrabajador,
+  COALESCE(c.Nombre, cp.Nombre)       AS NombrePersona,
+  COALESCE(c.Celular, cp.Celular)     AS Celular,
+  COALESCE(c.Direccion, cp.Direccion) AS Direccion,
+  v.Estado, v.FechaActualizacion AS UltimaInteraccion
+`;
+
+const _joinsConTrabajador = `
+  JOIN persona p ON v.PersonaID = p.ID
+  LEFT JOIN cliente c ON p.ID = c.PersonaID
+  LEFT JOIN clienteprospecto cp ON p.ID = cp.PersonaID
+  LEFT JOIN trabajador t ON t.Cedula = v.CedulaTrabajador
+`;
+
+// Visitas de la semana ya realizadas (todos los trabajadores)
+async function listarSemanaVisitadas(fechaInicio, fechaFin) {
+    const [rows] = await pool.query(
+        `SELECT ${_colsConTrabajador} FROM visita v ${_joinsConTrabajador}
+         WHERE v.FechaVisita BETWEEN ? AND ? AND v.Estado = 'Visitado'
+         ORDER BY v.FechaVisita ASC`,
+        [fechaInicio, fechaFin]
+    );
+    return rows;
+}
+
+// Visitas de la semana por gestionar (todos los trabajadores): No contesta y Re agendada primero, Pendiente después
+async function listarSemanaPorGestionar(fechaInicio, fechaFin) {
+    const [rows] = await pool.query(
+        `SELECT ${_colsConTrabajador} FROM visita v ${_joinsConTrabajador}
+         WHERE v.FechaVisita BETWEEN ? AND ?
+           AND v.Estado IN ('Pendiente', 'No contesta', 'Re agendada')
+         ORDER BY
+           CASE v.Estado WHEN 'Pendiente' THEN 1 ELSE 0 END,
+           v.FechaVisita ASC`,
+        [fechaInicio, fechaFin]
+    );
+    return rows;
+}
 
 async function cambiarEstado(visitaId, nuevoEstado, notas = null) {
     if (!ESTADOS_VALIDOS.includes(nuevoEstado)) throw new Error('Estado inválido');
     if (!notas || !notas.trim()) throw new Error('Las notas son obligatorias');
-    const conn = await pool.getConnection();
-    try {
-        await conn.beginTransaction();
-        await conn.query(
-            'INSERT INTO visita_estado (VisitaID, Estado, FechaActualizacion) VALUES (?, ?, NOW())',
-            [visitaId, nuevoEstado]
-        );
-        await conn.query(
-            'UPDATE visita SET Notas = ? WHERE ID = ?',
-            [notas.trim(), visitaId]
-        );
-        await conn.commit();
-    } catch (e) {
-        await conn.rollback();
-        throw e;
-    } finally {
-        conn.release();
-    }
+    await pool.query(
+        'UPDATE visita SET Estado = ?, FechaActualizacion = NOW(), Notas = ? WHERE ID = ?',
+        [nuevoEstado, notas.trim(), visitaId]
+    );
 }
 
 async function inventarioAlimentacion() {
@@ -218,4 +230,4 @@ async function guardarSuplemento(visitaId, suplementos, actor = {}) {
     }
 }
 
-module.exports = { listarSemana, listarMes, buscar, kpiSemana, detallePersona, historialCompras, historialVisitas, cambiarEstado, inventarioAlimentacion, guardarSuplemento };
+module.exports = { listarSemana, listarMes, buscar, kpiSemana, detallePersona, historialCompras, historialVisitas, cambiarEstado, inventarioAlimentacion, guardarSuplemento, listarSemanaVisitadas, listarSemanaPorGestionar };

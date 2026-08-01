@@ -13,10 +13,12 @@ const express = require('express');
 const router = express.Router();
 
 const asesorComercialRutas = require('./AsesorComercial/asesorComercialRutas');
+const telemercaderRutas = require('./Telemercader/telemercaderRutas');
 
 
 // Cada sub-router aplica su propio verificarToken + verificarRol internamente
 router.use(asesorComercialRutas);
+router.use(telemercaderRutas);
 
 
 module.exports = router;
