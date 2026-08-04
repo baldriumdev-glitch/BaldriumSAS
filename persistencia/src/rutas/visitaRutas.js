@@ -94,4 +94,92 @@ router.post('/suplemento', async (req, res) => {
     }
 });
 
+router.get('/fallidas', async (_req, res) => {
+    try {
+        const rows = await repo.listarFallidas();
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/fallidas/kpi', async (_req, res) => {
+    try {
+        const kpi = await repo.kpiVisitasFallidas();
+        res.json(kpi);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/fallidas/buscar', async (req, res) => {
+    try {
+        const { q = '' } = req.query;
+        const rows = await repo.buscarFallidas(q);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/semana/visitadas/buscar', async (req, res) => {
+    try {
+        const { q = '' } = req.query;
+        const rows = await repo.buscarVisitadas(q);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get('/semana/por-gestionar/buscar', async (req, res) => {
+    try {
+        const { q = '' } = req.query;
+        const rows = await repo.buscarPorGestionar(q);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.post('/:id/estado', async (req, res) => {
+    try {
+        const { estado, notas, auditCtx } = req.body;
+        await repo.cambiarEstadoTelemercader(Number(req.params.id), estado, notas, auditCtx);
+        res.json({ ok: true });
+    } catch (e) {
+        res.status(400).json({ error: e.message });
+    }
+});
+
+router.get('/:id', async (req, res) => {
+    try {
+        const datos = await repo.obtenerDetalle(Number(req.params.id));
+        if (!datos) return res.status(404).json({ error: 'Visita no encontrada' });
+        res.json(datos);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.put('/:id', async (req, res) => {
+    try {
+        const { auditCtx, ...datos } = req.body;
+        await repo.editarVisita(Number(req.params.id), datos, auditCtx);
+        res.json({ ok: true });
+    } catch (e) {
+        res.status(400).json({ error: e.message });
+    }
+});
+
+router.post('/:id/cancelar', async (req, res) => {
+    try {
+        const { motivo, auditCtx } = req.body;
+        await repo.cancelarVisita(Number(req.params.id), motivo, auditCtx);
+        res.json({ ok: true });
+    } catch (e) {
+        res.status(400).json({ error: e.message });
+    }
+});
+
 module.exports = router;

@@ -1,4 +1,5 @@
 const pool = require('./db');
+const auditRepo = require('./auditoriaRepositorio');
 
 const _cols = `
   v.ID, v.PersonaID, v.FechaVisita, v.CantidadPersonas, v.Notas,
@@ -18,7 +19,7 @@ const _joins = `
 async function listarSemana(cedula, fechaInicio, fechaFin) {
     const [rows] = await pool.query(
         `SELECT ${_cols} FROM visita v ${_joins}
-         WHERE v.CedulaTrabajador = ? AND v.FechaVisita BETWEEN ? AND ?
+         WHERE v.CedulaTrabajador = ? AND DATE(v.FechaVisita) BETWEEN ? AND ?
          ORDER BY
            CASE v.Estado WHEN 'Pendiente' THEN 0 ELSE 1 END,
            CASE WHEN DATE(v.FechaVisita) = CURDATE() THEN 0 ELSE 1 END,
@@ -63,7 +64,7 @@ async function kpiSemana(cedula, fechaInicio, fechaFin) {
            SUM(CASE WHEN v.Estado = 'Visitado' THEN 1 ELSE 0 END) AS VisitasConfirmadas,
            SUM(CASE WHEN v.Estado IN ('No contesta', 'Rechaza') THEN 1 ELSE 0 END) AS VisitasNoEfectivas
          FROM visita v
-         WHERE v.CedulaTrabajador = ? AND v.FechaVisita BETWEEN ? AND ?`,
+         WHERE v.CedulaTrabajador = ? AND DATE(v.FechaVisita) BETWEEN ? AND ?`,
         [cedula, fechaInicio, fechaFin]
     );
     return kpi;
@@ -147,7 +148,7 @@ const _joinsConTrabajador = `
 async function listarSemanaVisitadas(fechaInicio, fechaFin) {
     const [rows] = await pool.query(
         `SELECT ${_colsConTrabajador} FROM visita v ${_joinsConTrabajador}
-         WHERE v.FechaVisita BETWEEN ? AND ? AND v.Estado = 'Visitado'
+         WHERE DATE(v.FechaVisita) BETWEEN ? AND ? AND v.Estado = 'Visitado'
          ORDER BY v.FechaVisita ASC`,
         [fechaInicio, fechaFin]
     );
@@ -158,7 +159,7 @@ async function listarSemanaVisitadas(fechaInicio, fechaFin) {
 async function listarSemanaPorGestionar(fechaInicio, fechaFin) {
     const [rows] = await pool.query(
         `SELECT ${_colsConTrabajador} FROM visita v ${_joinsConTrabajador}
-         WHERE v.FechaVisita BETWEEN ? AND ?
+         WHERE DATE(v.FechaVisita) BETWEEN ? AND ?
            AND v.Estado IN ('Pendiente', 'No contesta', 'Re agendada')
          ORDER BY
            CASE v.Estado WHEN 'Pendiente' THEN 1 ELSE 0 END,
@@ -177,6 +178,206 @@ async function cambiarEstado(visitaId, nuevoEstado, notas = null) {
     );
 }
 
+// Estados que Telemercader puede asignar desde la tabla "por gestionar".
+// 'Visitado' y 'Rechaza' quedan fuera: esos los define quien realiza la visita.
+const ESTADOS_TELEMERCADER = ['Pendiente', 'No contesta', 'Re agendada'];
+
+async function cambiarEstadoTelemercader(visitaId, nuevoEstado, notas, auditCtx = {}) {
+    if (!ESTADOS_TELEMERCADER.includes(nuevoEstado)) {
+        throw new Error(`Estado inválido. Desde esta tabla solo se permite: ${ESTADOS_TELEMERCADER.join(', ')}.`);
+    }
+    if (!notas || !notas.trim()) throw new Error('Las notas son obligatorias');
+
+    const [[antes]] = await pool.query('SELECT Estado, Notas FROM visita WHERE ID = ?', [visitaId]);
+    if (!antes) throw new Error('Visita no encontrada');
+
+    await pool.query(
+        'UPDATE visita SET Estado = ?, FechaActualizacion = NOW(), Notas = ? WHERE ID = ?',
+        [nuevoEstado, notas.trim(), visitaId]
+    );
+
+    const actor = auditCtx.actor ?? {};
+    auditRepo.registrarSistema({
+        cedulaTrabajador:   actor.cedula   ?? null,
+        nombreTrabajador:   actor.nombre   ?? null,
+        tipoAccion:         'CAMBIO_ESTADO',
+        tablaAfectada:      'visita',
+        registroAfectadoID: visitaId,
+        valorAnterior:      { estado: antes.Estado, notas: antes.Notas },
+        valorNuevo:         { estado: nuevoEstado, notas: notas.trim() },
+        descripcion:        `Visita #${visitaId} cambió de "${antes.Estado}" a "${nuevoEstado}"`,
+        direccionIP:        auditCtx.ip     ?? null,
+        dispositivo:        auditCtx.device ?? null,
+    }).catch(err => console.error('[Auditoría Cambio Estado Visita]', err.message));
+}
+
+const DIAS_VIGENCIA_FALLIDAS = 14;
+
+// Visitas rechazadas o canceladas de las últimas 2 semanas (todos los trabajadores), con notas
+async function listarFallidas(dias = DIAS_VIGENCIA_FALLIDAS) {
+    const [rows] = await pool.query(
+        `SELECT ${_colsConTrabajador} FROM visita v ${_joinsConTrabajador}
+         WHERE v.Estado IN ('Rechaza', 'Cancelada')
+           AND v.FechaActualizacion >= (NOW() - INTERVAL ? DAY)
+         ORDER BY v.FechaActualizacion DESC`,
+        [dias]
+    );
+    return rows;
+}
+
+// KPI: total de visitas fallidas (rechazadas + canceladas) de las últimas 2 semanas
+async function kpiVisitasFallidas(dias = DIAS_VIGENCIA_FALLIDAS) {
+    const [[{ TotalFallidas }]] = await pool.query(
+        `SELECT COUNT(*) AS TotalFallidas FROM visita
+         WHERE Estado IN ('Rechaza', 'Cancelada')
+           AND FechaActualizacion >= (NOW() - INTERVAL ? DAY)`,
+        [dias]
+    );
+    return { TotalFallidas };
+}
+
+// Búsqueda sin límite de fecha, dentro del mismo grupo de estados de cada tabla de Telemercader
+async function _buscarVisitasPorEstado(estados, q, incluirNotas = false) {
+    const placeholders = estados.map(() => '?').join(', ');
+    const like = `%${q}%`;
+    const params = [...estados, like, like, like];
+    let condiciones = `
+             COALESCE(c.Nombre, cp.Nombre)          LIKE ?
+             OR COALESCE(c.Celular, cp.Celular)     LIKE ?
+             OR COALESCE(c.Direccion, cp.Direccion) LIKE ?`;
+    if (incluirNotas) {
+        condiciones += `\n             OR v.Notas LIKE ?`;
+        params.push(like);
+    }
+    const [rows] = await pool.query(
+        `SELECT ${_colsConTrabajador} FROM visita v ${_joinsConTrabajador}
+         WHERE v.Estado IN (${placeholders})
+           AND (${condiciones})
+         ORDER BY v.FechaVisita DESC`,
+        params
+    );
+    return rows;
+}
+
+async function buscarVisitadas(q) {
+    return _buscarVisitasPorEstado(['Visitado'], q);
+}
+
+async function buscarPorGestionar(q) {
+    return _buscarVisitasPorEstado(['Pendiente', 'No contesta', 'Re agendada'], q);
+}
+
+// Las fallidas también se buscan por notas, ya que ahí queda registrado el motivo del rechazo/cancelación
+async function buscarFallidas(q) {
+    return _buscarVisitasPorEstado(['Rechaza', 'Cancelada'], q, true);
+}
+
+// Detalle completo de una visita para el modal de edición (incluye notas y datos de la persona)
+async function obtenerDetalle(visitaId) {
+    const [[row]] = await pool.query(
+        `SELECT ${_colsConTrabajador}
+         FROM visita v ${_joinsConTrabajador}
+         WHERE v.ID = ?`,
+        [visitaId]
+    );
+    return row || null;
+}
+
+// Edita trabajador/fecha/cantidad/notas de una visita ya agendada (no toca el Estado)
+async function editarVisita(visitaId, datos, auditCtx = {}) {
+    const { cedulaTrabajador, fechaVisita, cantidadPersonas, notas } = datos;
+    if (!cedulaTrabajador) throw new Error('El trabajador asignado es obligatorio');
+    if (!fechaVisita) throw new Error('La fecha de la visita es obligatoria');
+    if (!cantidadPersonas || Number(cantidadPersonas) < 1) throw new Error('La cantidad de personas es obligatoria');
+
+    const [[antes]] = await pool.query(
+        'SELECT CedulaTrabajador, FechaVisita, CantidadPersonas, Notas, Estado FROM visita WHERE ID = ?',
+        [visitaId]
+    );
+    if (!antes) throw new Error('Visita no encontrada');
+
+    const cantidadPersonasNum = Number(cantidadPersonas);
+    await pool.query(
+        `UPDATE visita SET CedulaTrabajador = ?, FechaVisita = ?, CantidadPersonas = ?, Notas = ? WHERE ID = ?`,
+        [cedulaTrabajador, fechaVisita, cantidadPersonasNum, notas || null, visitaId]
+    );
+
+    const actor = auditCtx.actor ?? {};
+    auditRepo.registrarSistema({
+        cedulaTrabajador:   actor.cedula   ?? null,
+        nombreTrabajador:   actor.nombre   ?? null,
+        tipoAccion:         'EDITAR',
+        tablaAfectada:      'visita',
+        registroAfectadoID: visitaId,
+        valorAnterior: {
+            cedulaTrabajador: antes.CedulaTrabajador,
+            fechaVisita:      antes.FechaVisita,
+            cantidadPersonas: antes.CantidadPersonas,
+            notas:            antes.Notas,
+        },
+        valorNuevo: {
+            cedulaTrabajador,
+            fechaVisita,
+            cantidadPersonas: cantidadPersonasNum,
+            notas: notas || null,
+        },
+        descripcion:        `Visita #${visitaId} editada (estado actual: ${antes.Estado})`,
+        direccionIP:        auditCtx.ip     ?? null,
+        dispositivo:        auditCtx.device ?? null,
+    }).catch(err => console.error('[Auditoría Editar Visita]', err.message));
+}
+
+// Cancela una visita/agenda: no se elimina el registro, pasa a Estado='Cancelada'.
+// Deja una foto completa del estado anterior en la auditoría (obligatorio para esta acción).
+async function cancelarVisita(visitaId, motivo, auditCtx = {}) {
+    if (!motivo || !motivo.trim()) throw new Error('El motivo de la cancelación es obligatorio');
+
+    const [[antes]] = await pool.query(
+        `SELECT v.CedulaTrabajador, v.FechaVisita, v.CantidadPersonas, v.Notas, v.Estado,
+                t.Nombre AS NombreTrabajador,
+                COALESCE(c.Nombre, cp.Nombre) AS NombrePersona
+         FROM visita v
+         JOIN persona p ON v.PersonaID = p.ID
+         LEFT JOIN cliente c ON p.ID = c.PersonaID
+         LEFT JOIN clienteprospecto cp ON p.ID = cp.PersonaID
+         LEFT JOIN trabajador t ON t.Cedula = v.CedulaTrabajador
+         WHERE v.ID = ?`,
+        [visitaId]
+    );
+    if (!antes) throw new Error('Visita no encontrada');
+    if (antes.Estado === 'Cancelada') throw new Error('Esta visita ya está cancelada');
+
+    await pool.query(
+        `UPDATE visita SET Estado = 'Cancelada', FechaActualizacion = NOW() WHERE ID = ?`,
+        [visitaId]
+    );
+
+    const actor = auditCtx.actor ?? {};
+    auditRepo.registrarSistema({
+        cedulaTrabajador:   actor.cedula   ?? null,
+        nombreTrabajador:   actor.nombre   ?? null,
+        tipoAccion:         'CAMBIO_ESTADO',
+        tablaAfectada:      'visita',
+        registroAfectadoID: visitaId,
+        valorAnterior: {
+            estado:            antes.Estado,
+            cliente:           antes.NombrePersona,
+            trabajadorAsignado: antes.NombreTrabajador,
+            cedulaTrabajador:  antes.CedulaTrabajador,
+            fechaVisita:       antes.FechaVisita,
+            cantidadPersonas:  antes.CantidadPersonas,
+            notas:             antes.Notas,
+        },
+        valorNuevo: {
+            estado: 'Cancelada',
+            motivoCancelacion: motivo.trim(),
+        },
+        descripcion:        `Visita #${visitaId} de ${antes.NombrePersona} cancelada (estaba en "${antes.Estado}"). Motivo: ${motivo.trim()}`,
+        direccionIP:        auditCtx.ip     ?? null,
+        dispositivo:        auditCtx.device ?? null,
+    }).catch(err => console.error('[Auditoría Cancelar Visita]', err.message));
+}
+
 async function inventarioAlimentacion() {
     const [rows] = await pool.query(
         `SELECT ID, Nombre, Valor, Cantidad FROM inventario
@@ -188,7 +389,6 @@ async function inventarioAlimentacion() {
 
 async function guardarSuplemento(visitaId, suplementos, actor = {}) {
     if (!suplementos || suplementos.length === 0) return;
-    const auditRepo = require('./auditoriaRepositorio');
 
     for (const { inventarioId, cantidad } of suplementos) {
         const cant = Number(cantidad) || 1;
@@ -230,4 +430,9 @@ async function guardarSuplemento(visitaId, suplementos, actor = {}) {
     }
 }
 
-module.exports = { listarSemana, listarMes, buscar, kpiSemana, detallePersona, historialCompras, historialVisitas, cambiarEstado, inventarioAlimentacion, guardarSuplemento, listarSemanaVisitadas, listarSemanaPorGestionar };
+module.exports = {
+    listarSemana, listarMes, buscar, kpiSemana, detallePersona, historialCompras, historialVisitas,
+    cambiarEstado, inventarioAlimentacion, guardarSuplemento, listarSemanaVisitadas, listarSemanaPorGestionar,
+    obtenerDetalle, editarVisita, cancelarVisita, cambiarEstadoTelemercader,
+    listarFallidas, kpiVisitasFallidas, buscarVisitadas, buscarPorGestionar, buscarFallidas,
+};

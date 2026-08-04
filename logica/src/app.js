@@ -6,6 +6,7 @@ const usuarioRutas = require('./rutas/Usuario/usuarioRutas');
 const perfilRutas = require('./rutas/Usuario/perfilRutas');
 const inventarioRutas    = require('./rutas/Inventario/inventarioRutas');
 const telemercadeoRutas  = require('./rutas/Telemercadeo/telemercadeoRutas');
+const auxiliarAdministrativoRutas = require('./rutas/AuxiliarAdministrativo/auxiliarAdministrativoRutas');
 
 const { verificarToken } = require('./seguridad/jwtMiddleware');
 
@@ -28,6 +29,7 @@ app.use('/api/Usuario', usuarioRutas);
 app.use('/api/perfil', perfilRutas);
 app.use('/api/Inventario', inventarioRutas);
 app.use('/api/telemercadeo', telemercadeoRutas);
+app.use('/api/auxiliar-administrativo', auxiliarAdministrativoRutas);
 
 app.get('/api/protegido', verificarToken, (req, res) => {
     res.json({

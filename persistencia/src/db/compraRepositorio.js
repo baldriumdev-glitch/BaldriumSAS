@@ -108,17 +108,11 @@ async function crearCompra(cedulaCliente, actor, formaPago, notas, items, referi
                 const personaId = rPersona.insertId;
 
                 const [rProspecto] = await conn.query(
-                    `INSERT INTO clienteprospecto (PersonaID, Nombre, Celular, Direccion)
-                     VALUES (?, ?, ?, ?)`,
+                    `INSERT INTO clienteprospecto (PersonaID, Nombre, Celular, Direccion, Estado, FechaActualizacion)
+                     VALUES (?, ?, ?, ?, 'Pendiente', NOW())`,
                     [personaId, ref.nombre || null, ref.celular || null, ref.direccion || null]
                 );
                 const prospectoId = rProspecto.insertId;
-
-                await conn.query(
-                    `INSERT INTO prospecto_estado (ProspectoID, Estado, FechaActualizacion)
-                     VALUES (?, 'Pendiente', NOW())`,
-                    [prospectoId]
-                );
 
                 await conn.query(
                     `INSERT INTO comprareferido (ClienteProspectoID, CompraID) VALUES (?, ?)`,

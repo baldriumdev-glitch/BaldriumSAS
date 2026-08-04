@@ -1,4 +1,4 @@
-const { prospecto, visita } = require('../../../infraestructura/persistenciaCliente');
+const { prospecto, visita, trabajador } = require('../../../infraestructura/persistenciaCliente');
 
 async function listarPendientes() {
     return prospecto.listarPendientes();
@@ -6,6 +6,29 @@ async function listarPendientes() {
 
 async function listarEnGestion() {
     return prospecto.listarEnGestion();
+}
+
+async function buscarPendientes(q) {
+    return prospecto.buscarPendientes(q);
+}
+
+async function buscarEnGestion(q) {
+    return prospecto.buscarEnGestion(q);
+}
+
+async function agendarVisita(prospectoId, datos, auditCtx) {
+    return prospecto.agendarVisita(prospectoId, datos, auditCtx);
+}
+
+async function cambiarEstadoProspecto(prospectoId, estado, auditCtx) {
+    return prospecto.cambiarEstado(prospectoId, estado, auditCtx);
+}
+
+async function listarAsesoresComerciales() {
+    const trabajadores = await trabajador.listarTodosConRoles();
+    return trabajadores
+        .filter(t => t.activo && t.roles.some(r => r.nombre === 'Asesor comercial'))
+        .map(t => ({ cedula: t.cedula, nombre: t.nombre }));
 }
 
 function _semanaActual() {
@@ -31,4 +54,47 @@ async function listarVisitasSemanaPorGestionar() {
     return visita.listarSemanaPorGestionar(inicio, fin);
 }
 
-module.exports = { listarPendientes, listarEnGestion, listarVisitasSemanaVisitadas, listarVisitasSemanaPorGestionar };
+async function obtenerDetalleVisita(visitaId) {
+    return visita.obtenerDetalle(visitaId);
+}
+
+async function editarVisita(visitaId, datos, auditCtx) {
+    return visita.editar(visitaId, datos, auditCtx);
+}
+
+async function cancelarVisita(visitaId, motivo, auditCtx) {
+    return visita.cancelar(visitaId, motivo, auditCtx);
+}
+
+async function cambiarEstadoVisita(visitaId, estado, notas, auditCtx) {
+    return visita.cambiarEstadoTelemercader(visitaId, estado, notas, auditCtx);
+}
+
+async function listarVisitasFallidas() {
+    return visita.listarFallidas();
+}
+
+async function kpiVisitasFallidas() {
+    return visita.kpiVisitasFallidas();
+}
+
+async function buscarVisitasVisitadas(q) {
+    return visita.buscarVisitadas(q);
+}
+
+async function buscarVisitasPorGestionar(q) {
+    return visita.buscarPorGestionar(q);
+}
+
+async function buscarVisitasFallidas(q) {
+    return visita.buscarFallidas(q);
+}
+
+module.exports = {
+    listarPendientes, listarEnGestion, buscarPendientes, buscarEnGestion,
+    agendarVisita, cambiarEstadoProspecto, listarAsesoresComerciales,
+    listarVisitasSemanaVisitadas, listarVisitasSemanaPorGestionar,
+    obtenerDetalleVisita, editarVisita, cancelarVisita, cambiarEstadoVisita,
+    listarVisitasFallidas, kpiVisitasFallidas,
+    buscarVisitasVisitadas, buscarVisitasPorGestionar, buscarVisitasFallidas,
+};

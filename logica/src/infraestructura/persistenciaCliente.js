@@ -169,6 +169,33 @@ const visita = {
 
     listarSemanaPorGestionar: (inicio, fin) =>
         _req('GET', `/visitas/semana/por-gestionar?inicio=${inicio}&fin=${fin}`),
+
+    obtenerDetalle: (visitaId) =>
+        _req('GET', `/visitas/${visitaId}`),
+
+    editar: (visitaId, datos, auditCtx) =>
+        _req('PUT', `/visitas/${visitaId}`, { ...datos, auditCtx }),
+
+    cancelar: (visitaId, motivo, auditCtx) =>
+        _req('POST', `/visitas/${visitaId}/cancelar`, { motivo, auditCtx }),
+
+    cambiarEstadoTelemercader: (visitaId, estado, notas, auditCtx) =>
+        _req('POST', `/visitas/${visitaId}/estado`, { estado, notas, auditCtx }),
+
+    listarFallidas: () =>
+        _req('GET', '/visitas/fallidas'),
+
+    kpiVisitasFallidas: () =>
+        _req('GET', '/visitas/fallidas/kpi'),
+
+    buscarVisitadas: (q) =>
+        _req('GET', `/visitas/semana/visitadas/buscar?q=${encodeURIComponent(q)}`),
+
+    buscarPorGestionar: (q) =>
+        _req('GET', `/visitas/semana/por-gestionar/buscar?q=${encodeURIComponent(q)}`),
+
+    buscarFallidas: (q) =>
+        _req('GET', `/visitas/fallidas/buscar?q=${encodeURIComponent(q)}`),
 };
 
 // ─── Prospectos ──────────────────────────────────────────────────────────────
@@ -179,6 +206,18 @@ const prospecto = {
 
     listarEnGestion: () =>
         _req('GET', '/prospectos/en-gestion'),
+
+    buscarPendientes: (q) =>
+        _req('GET', `/prospectos/pendientes/buscar?q=${encodeURIComponent(q)}`),
+
+    buscarEnGestion: (q) =>
+        _req('GET', `/prospectos/en-gestion/buscar?q=${encodeURIComponent(q)}`),
+
+    agendarVisita: (prospectoId, datos, auditCtx) =>
+        _req('POST', `/prospectos/${prospectoId}/agendar-visita`, { ...datos, auditCtx }),
+
+    cambiarEstado: (prospectoId, estado, auditCtx) =>
+        _req('POST', `/prospectos/${prospectoId}/estado`, { estado, auditCtx }),
 };
 
 module.exports = { trabajador, inventario, auditoria, visita, compra, prospecto };

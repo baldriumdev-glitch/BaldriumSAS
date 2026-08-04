@@ -5,12 +5,19 @@ const { extraerIP, extraerDispositivo } = require('../../../utils/requestHelpers
 const svc = require('../../../servicios/Telemercadeo/AsesorComercial/visitaServicio');
 const compraSvc = require('../../../servicios/Telemercadeo/AsesorComercial/compraServicio');
 
-// Todas las rutas de este router requieren token válido + rol Asesor comercial
-router.use(verificarToken, verificarRol('Asesor comercial'));
+// Solo valida el token aquí; el rol se exige por ruta (ver comentario más abajo).
+router.use(verificarToken);
+
+// El chequeo de rol se aplica por ruta, no como router.use() global: este router
+// comparte prefijo de montaje con telemercaderRutas (ambos van bajo /api/telemercadeo
+// sin un path propio), así que un router.use(verificarRol(...)) global interceptaría
+// también las peticiones dirigidas al otro sub-router antes de que Express pudiera
+// intentarlo, bloqueando por error a los demás roles.
+const soloAsesor = verificarRol('Asesor comercial');
 
 // ─── Visitas ──────────────────────────────────────────────────────────────────
 
-router.get('/visitas/semana', async (req, res) => {
+router.get('/visitas/semana', soloAsesor, async (req, res) => {
     try {
         const { cedula } = req.usuario;
         const [visitas, kpi] = await Promise.all([
@@ -23,7 +30,7 @@ router.get('/visitas/semana', async (req, res) => {
     }
 });
 
-router.get('/visitas/mes', async (req, res) => {
+router.get('/visitas/mes', soloAsesor, async (req, res) => {
     try {
         const visitas = await svc.listarMes(req.usuario.cedula);
         res.json(visitas);
@@ -32,7 +39,7 @@ router.get('/visitas/mes', async (req, res) => {
     }
 });
 
-router.get('/visitas/buscar', async (req, res) => {
+router.get('/visitas/buscar', soloAsesor, async (req, res) => {
     try {
         const { q = '' } = req.query;
         const visitas = await svc.buscar(req.usuario.cedula, q);
@@ -42,7 +49,7 @@ router.get('/visitas/buscar', async (req, res) => {
     }
 });
 
-router.get('/visitas/alimentacion', async (_req, res) => {
+router.get('/visitas/alimentacion', soloAsesor, async (_req, res) => {
     try {
         const items = await svc.obtenerAlimentacion();
         res.json(items);
@@ -51,7 +58,7 @@ router.get('/visitas/alimentacion', async (_req, res) => {
     }
 });
 
-router.post('/visitas/estado', async (req, res) => {
+router.post('/visitas/estado', soloAsesor, async (req, res) => {
     try {
         const { visitaId, estado, suplementos = [], notas } = req.body;
         const auditCtx = { ip: extraerIP(req), device: extraerDispositivo(req), actor: req.usuario };
@@ -64,7 +71,7 @@ router.post('/visitas/estado', async (req, res) => {
 
 // ─── Persona ──────────────────────────────────────────────────────────────────
 
-router.get('/persona/detalle', async (req, res) => {
+router.get('/persona/detalle', soloAsesor, async (req, res) => {
     try {
         const datos = await svc.detallePersona(Number(req.query.personaId));
         if (!datos) return res.status(404).json({ error: 'Persona no encontrada' });
@@ -72,14 +79,14 @@ router.get('/persona/detalle', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.get('/persona/compras', async (req, res) => {
+router.get('/persona/compras', soloAsesor, async (req, res) => {
     try {
         const rows = await svc.historialCompras(Number(req.query.personaId));
         res.json(rows);
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.get('/persona/visitas', async (req, res) => {
+router.get('/persona/visitas', soloAsesor, async (req, res) => {
     try {
         const rows = await svc.historialVisitas(Number(req.query.personaId));
         res.json(rows);
@@ -88,7 +95,7 @@ router.get('/persona/visitas', async (req, res) => {
 
 // ─── Compras ──────────────────────────────────────────────────────────────────
 
-router.get('/compras/mis-compras', async (req, res) => {
+router.get('/compras/mis-compras', soloAsesor, async (req, res) => {
     try {
         const result = await compraSvc.listarComprasTrabajador(req.usuario.cedula);
         res.json(result);
@@ -97,7 +104,7 @@ router.get('/compras/mis-compras', async (req, res) => {
     }
 });
 
-router.get('/compras/mis-compras/semana', async (req, res) => {
+router.get('/compras/mis-compras/semana', soloAsesor, async (req, res) => {
     try {
         const result = await compraSvc.listarComprasTrabajadorSemana(req.usuario.cedula);
         res.json(result);
@@ -106,7 +113,7 @@ router.get('/compras/mis-compras/semana', async (req, res) => {
     }
 });
 
-router.get('/compras/mis-compras/mes', async (req, res) => {
+router.get('/compras/mis-compras/mes', soloAsesor, async (req, res) => {
     try {
         const result = await compraSvc.listarComprasTrabajadorMes(req.usuario.cedula);
         res.json(result);
@@ -115,7 +122,7 @@ router.get('/compras/mis-compras/mes', async (req, res) => {
     }
 });
 
-router.get('/compras/mis-compras/buscar', async (req, res) => {
+router.get('/compras/mis-compras/buscar', soloAsesor, async (req, res) => {
     try {
         const { q = '' } = req.query;
         const result = await compraSvc.buscarComprasTrabajador(req.usuario.cedula, q);
@@ -125,7 +132,7 @@ router.get('/compras/mis-compras/buscar', async (req, res) => {
     }
 });
 
-router.get('/compras/mis-compras/kpi-mes', async (req, res) => {
+router.get('/compras/mis-compras/kpi-mes', soloAsesor, async (req, res) => {
     try {
         const result = await compraSvc.kpiComprasMes(req.usuario.cedula);
         res.json(result);
@@ -134,7 +141,7 @@ router.get('/compras/mis-compras/kpi-mes', async (req, res) => {
     }
 });
 
-router.get('/compras/inventario-cocina', async (_req, res) => {
+router.get('/compras/inventario-cocina', soloAsesor, async (_req, res) => {
     try {
         const items = await compraSvc.inventarioCocina();
         res.json(items);
@@ -143,7 +150,7 @@ router.get('/compras/inventario-cocina', async (_req, res) => {
     }
 });
 
-router.get('/compras/cliente-por-persona', async (req, res) => {
+router.get('/compras/cliente-por-persona', soloAsesor, async (req, res) => {
     try {
         const datos = await compraSvc.clientePorPersona(Number(req.query.personaId));
         res.json(datos);
@@ -152,7 +159,7 @@ router.get('/compras/cliente-por-persona', async (req, res) => {
     }
 });
 
-router.post('/compras/crear-cliente', async (req, res) => {
+router.post('/compras/crear-cliente', soloAsesor, async (req, res) => {
     try {
         const { personaId, ...datos } = req.body;
         const auditCtx = { ip: extraerIP(req), device: extraerDispositivo(req), actor: req.usuario };
@@ -163,7 +170,7 @@ router.post('/compras/crear-cliente', async (req, res) => {
     }
 });
 
-router.post('/compras/cliente-libre', async (req, res) => {
+router.post('/compras/cliente-libre', soloAsesor, async (req, res) => {
     try {
         const auditCtx = { ip: extraerIP(req), device: extraerDispositivo(req), actor: req.usuario };
         const result = await compraSvc.registrarClienteLibre(req.body, auditCtx);
@@ -173,7 +180,7 @@ router.post('/compras/cliente-libre', async (req, res) => {
     }
 });
 
-router.post('/compras/nueva', async (req, res) => {
+router.post('/compras/nueva', soloAsesor, async (req, res) => {
     try {
         const { cedulaCliente, formaPago, notas, items, referidos } = req.body;
         const auditCtx = { ip: extraerIP(req), device: extraerDispositivo(req), actor: req.usuario };
