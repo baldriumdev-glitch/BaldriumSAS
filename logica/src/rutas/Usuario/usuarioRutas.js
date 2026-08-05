@@ -73,6 +73,7 @@ router.patch('/:cedula/estado', async (req, res) => {
         await svc.cambiarEstado(req.params.cedula, req.body.activo, auditCtx);
         res.json({ mensaje: `Trabajador ${req.body.activo ? 'activado' : 'desactivado'} correctamente.` });
     } catch (err) {
+        if (err.message.includes('no encontrado')) return res.status(404).json({ error: err.message });
         console.error('Error al cambiar estado:', err);
         res.status(500).json({ error: 'Error interno del servidor.' });
     }

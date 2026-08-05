@@ -76,6 +76,9 @@ async function actualizar(cedula, datos, rolesIds = [], auditCtx = {}) {
 }
 
 async function cambiarEstado(cedula, activo, auditCtx = {}) {
+    const anterior = await obtenerUno(cedula);
+    if (!anterior) throw new Error('Trabajador no encontrado.');
+
     await trabajador.cambiarEstado(cedula, activo);
 
     auditoria.registrarSistema({
