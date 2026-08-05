@@ -348,8 +348,8 @@ async function cancelarVisita(visitaId, motivo, auditCtx = {}) {
     if (antes.Estado === 'Cancelada') throw new Error('Esta visita ya está cancelada');
 
     await pool.query(
-        `UPDATE visita SET Estado = 'Cancelada', FechaActualizacion = NOW() WHERE ID = ?`,
-        [visitaId]
+        `UPDATE visita SET Estado = 'Cancelada', FechaActualizacion = NOW(), Notas = ? WHERE ID = ?`,
+        [motivo.trim(), visitaId]
     );
 
     const actor = auditCtx.actor ?? {};

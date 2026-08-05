@@ -24,6 +24,10 @@ async function cambiarEstadoProspecto(prospectoId, estado, auditCtx) {
     return prospecto.cambiarEstado(prospectoId, estado, auditCtx);
 }
 
+async function crearProspectoYAgendar(datos, auditCtx) {
+    return prospecto.crearYAgendar(datos, auditCtx);
+}
+
 async function listarAsesoresComerciales() {
     const trabajadores = await trabajador.listarTodosConRoles();
     return trabajadores
@@ -92,7 +96,7 @@ async function buscarVisitasFallidas(q) {
 
 module.exports = {
     listarPendientes, listarEnGestion, buscarPendientes, buscarEnGestion,
-    agendarVisita, cambiarEstadoProspecto, listarAsesoresComerciales,
+    agendarVisita, cambiarEstadoProspecto, crearProspectoYAgendar, listarAsesoresComerciales,
     listarVisitasSemanaVisitadas, listarVisitasSemanaPorGestionar,
     obtenerDetalleVisita, editarVisita, cancelarVisita, cambiarEstadoVisita,
     listarVisitasFallidas, kpiVisitasFallidas,

@@ -218,6 +218,9 @@ const prospecto = {
 
     cambiarEstado: (prospectoId, estado, auditCtx) =>
         _req('POST', `/prospectos/${prospectoId}/estado`, { estado, auditCtx }),
+
+    crearYAgendar: (datos, auditCtx) =>
+        _req('POST', '/prospectos/nueva-agenda', { ...datos, auditCtx }),
 };
 
 module.exports = { trabajador, inventario, auditoria, visita, compra, prospecto };

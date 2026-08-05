@@ -151,4 +151,74 @@ async function agendarVisita(prospectoId, datos, auditCtx = {}) {
     }
 }
 
-module.exports = { listarPendientes, listarEnGestion, buscarPendientes, buscarEnGestion, agendarVisita, cambiarEstado };
+// Crea un prospecto desde cero (no existía) y agenda su visita en el mismo paso:
+// exige nombre/celular/dirección + trabajador/fecha/cantidad, igual que agendarVisita,
+// pero primero crea la persona y el clienteprospecto.
+async function crearProspectoYAgendarVisita(datos, auditCtx = {}) {
+    const { nombre, celular, direccion, cedulaTrabajador, fechaVisita, cantidadPersonas, notas } = datos;
+
+    const nombreFinal    = (nombre    ?? '').toString().trim();
+    const celularFinal   = (celular   ?? '').toString().trim();
+    const direccionFinal = (direccion ?? '').toString().trim();
+
+    if (!nombreFinal)    throw new Error('El nombre es obligatorio');
+    if (!celularFinal)   throw new Error('El celular es obligatorio');
+    if (!direccionFinal) throw new Error('La dirección es obligatoria');
+    if (!cedulaTrabajador) throw new Error('El trabajador asignado es obligatorio');
+    if (!fechaVisita) throw new Error('La fecha de la visita es obligatoria');
+    if (!cantidadPersonas || Number(cantidadPersonas) < 1) throw new Error('La cantidad de personas es obligatoria');
+
+    const actor = auditCtx.actor ?? {};
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        const [rPersona] = await conn.query(`INSERT INTO persona (TipoPersona) VALUES ('Prospecto')`);
+        const personaId = rPersona.insertId;
+
+        const [rProspecto] = await conn.query(
+            `INSERT INTO clienteprospecto (PersonaID, Nombre, Celular, Direccion, Estado, FechaActualizacion)
+             VALUES (?, ?, ?, ?, 'Agendado', NOW())`,
+            [personaId, nombreFinal, celularFinal, direccionFinal]
+        );
+        const prospectoId = rProspecto.insertId;
+
+        const cantidadPersonasNum = Number(cantidadPersonas);
+        const [rVisita] = await conn.query(
+            `INSERT INTO visita (PersonaID, CedulaTrabajador, FechaVisita, CantidadPersonas, Notas, Estado, FechaActualizacion)
+             VALUES (?, ?, ?, ?, ?, 'Pendiente', NOW())`,
+            [personaId, cedulaTrabajador, fechaVisita, cantidadPersonasNum, notas || null]
+        );
+        const visitaId = rVisita.insertId;
+
+        await conn.commit();
+
+        auditRepo.registrarSistema({
+            cedulaTrabajador:   actor.cedula   ?? null,
+            nombreTrabajador:   actor.nombre   ?? null,
+            tipoAccion:         'CREAR',
+            tablaAfectada:      'clienteprospecto',
+            registroAfectadoID: prospectoId,
+            valorAnterior:      null,
+            valorNuevo: {
+                nombre: nombreFinal, celular: celularFinal, direccion: direccionFinal,
+                visitaId, cedulaTrabajador, fechaVisita, cantidadPersonas: cantidadPersonasNum,
+            },
+            descripcion:        `Prospecto ${nombreFinal} creado desde cero y agendado (visita #${visitaId})`,
+            direccionIP:        auditCtx.ip     ?? null,
+            dispositivo:        auditCtx.device ?? null,
+        }).catch(err => console.error('[Auditoría Nueva Agenda]', err.message));
+
+        return { prospectoId, personaId, visitaId, nombre: nombreFinal, celular: celularFinal, direccion: direccionFinal };
+    } catch (e) {
+        await conn.rollback();
+        throw e;
+    } finally {
+        conn.release();
+    }
+}
+
+module.exports = {
+    listarPendientes, listarEnGestion, buscarPendientes, buscarEnGestion,
+    agendarVisita, cambiarEstado, crearProspectoYAgendarVisita,
+};

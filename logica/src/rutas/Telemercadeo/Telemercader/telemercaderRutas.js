@@ -74,6 +74,16 @@ router.post('/prospectos/:id/estado', soloTelemercader, async (req, res) => {
     }
 });
 
+router.post('/prospectos/nueva-agenda', soloTelemercader, async (req, res) => {
+    try {
+        const auditCtx = { ip: extraerIP(req), device: extraerDispositivo(req), actor: req.usuario };
+        const result = await svc.crearProspectoYAgendar(req.body, auditCtx);
+        res.json(result);
+    } catch (e) {
+        res.status(400).json({ error: e.message });
+    }
+});
+
 router.get('/asesores', soloTelemercader, async (_req, res) => {
     try {
         const rows = await svc.listarAsesoresComerciales();
