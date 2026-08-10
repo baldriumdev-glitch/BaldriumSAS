@@ -93,10 +93,25 @@ router.get('/asesores', soloTelemercader, async (_req, res) => {
     }
 });
 
-// ─── Beneficios (en construcción) ───────────────────────────────────────────────
+// ─── Beneficios ─────────────────────────────────────────────────────────────────
 
-router.get('/beneficios', soloTelemercader, (_req, res) => {
-    res.json({ ok: true, mensaje: 'Beneficios — en construcción' });
+router.get('/beneficios/compras-elegibles', soloTelemercader, async (_req, res) => {
+    try {
+        const rows = await svc.listarComprasElegiblesBeneficio();
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.post('/beneficios', soloTelemercader, async (req, res) => {
+    try {
+        const auditCtx = { ip: extraerIP(req), device: extraerDispositivo(req), actor: req.usuario };
+        const result = await svc.crearBeneficio(req.body.compraId, auditCtx);
+        res.json(result);
+    } catch (e) {
+        res.status(400).json({ error: e.message });
+    }
 });
 
 // ─── Visitas de la semana ───────────────────────────────────────────────────────

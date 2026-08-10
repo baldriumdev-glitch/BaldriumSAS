@@ -1,4 +1,4 @@
-const { trabajador, auditoria } = require('../../infraestructura/persistenciaCliente');
+const { trabajador, auditoria, beneficio } = require('../../infraestructura/persistenciaCliente');
 
 async function listar() {
     return await trabajador.listarTodosConRoles();
@@ -13,9 +13,9 @@ async function listarAuditoria(limite = 400) {
 }
 
 async function crear(datos, rolesIds = [], auditCtx = {}) {
-    const { Cedula, Contrasena, Nombre, CorreoElectronico } = datos;
-    if (!Cedula || !Contrasena || !Nombre) {
-        throw new Error('Cédula, contraseña y nombre son requeridos.');
+    const { Cedula, Contrasena, Nombre, Celular, CorreoElectronico, Direccion, CodigoTrabajador } = datos;
+    if (!Cedula || !Contrasena || !Nombre || !Celular || !CorreoElectronico || !Direccion || !CodigoTrabajador) {
+        throw new Error('Cédula, contraseña, nombre, celular, correo, dirección y código de trabajador son requeridos.');
     }
 
     if (await trabajador.existeCedula(Cedula)) {
@@ -42,6 +42,18 @@ async function crear(datos, rolesIds = [], auditCtx = {}) {
         throw new Error(`El correo ${CorreoElectronico} ya está en uso por otro trabajador.`);
     }
 
+    if (CodigoTrabajador && await trabajador.existeCodigoTrabajador(CodigoTrabajador)) {
+        auditoria.registrarSistema({
+            cedulaTrabajador: auditCtx.actor?.cedula,
+            nombreTrabajador: auditCtx.actor?.nombre,
+            tipoAccion: 'CREAR', tablaAfectada: 'trabajador',
+            direccionIP: auditCtx.ip, dispositivo: auditCtx.device,
+            resultado: 'FALLIDO',
+            descripcion: `El código de trabajador ${CodigoTrabajador} ya está en uso.`,
+        });
+        throw new Error(`El código de trabajador ${CodigoTrabajador} ya está en uso por otro trabajador.`);
+    }
+
     const nuevo = await trabajador.crearTrabajador(datos, rolesIds);
 
     auditoria.registrarSistema({
@@ -60,6 +72,14 @@ async function crear(datos, rolesIds = [], auditCtx = {}) {
 async function actualizar(cedula, datos, rolesIds = [], auditCtx = {}) {
     const anterior = await obtenerUno(cedula);
     if (!anterior) throw new Error('Trabajador no encontrado.');
+
+    if (datos.CorreoElectronico && await trabajador.existeCorreo(datos.CorreoElectronico, cedula)) {
+        throw new Error(`El correo ${datos.CorreoElectronico} ya está en uso por otro trabajador.`);
+    }
+
+    if (datos.CodigoTrabajador && await trabajador.existeCodigoTrabajador(datos.CodigoTrabajador, cedula)) {
+        throw new Error(`El código de trabajador ${datos.CodigoTrabajador} ya está en uso por otro trabajador.`);
+    }
 
     await trabajador.actualizarTrabajador(cedula, datos, rolesIds);
 
@@ -110,4 +130,15 @@ async function obtenerUno(cedula) {
     };
 }
 
-module.exports = { listar, listarRoles, listarAuditoria, crear, actualizar, cambiarEstado, obtenerUno };
+async function obtenerParametrosBeneficio() {
+    return beneficio.obtenerParametros();
+}
+
+async function actualizarParametrosBeneficio(valorMinimoCompra, minimoReferidosVisitados, auditCtx = {}) {
+    return beneficio.actualizarParametros(valorMinimoCompra, minimoReferidosVisitados, auditCtx);
+}
+
+module.exports = {
+    listar, listarRoles, listarAuditoria, crear, actualizar, cambiarEstado, obtenerUno,
+    obtenerParametrosBeneficio, actualizarParametrosBeneficio,
+};

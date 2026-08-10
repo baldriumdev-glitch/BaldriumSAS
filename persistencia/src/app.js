@@ -5,6 +5,7 @@ const auditoriaRutas  = require('./rutas/auditoriaRutas');
 const visitaRutas     = require('./rutas/visitaRutas');
 const compraRutas     = require('./rutas/compraRutas');
 const clienteProspectoRutas = require('./rutas/clienteProspectoRutas');
+const beneficioRutas = require('./rutas/beneficioRutas');
 
 const app = express();
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use('/auditoria',    auditoriaRutas);
 app.use('/visitas',      visitaRutas);
 app.use('/compras',      compraRutas);
 app.use('/prospectos',   clienteProspectoRutas);
+app.use('/beneficios',   beneficioRutas);
 
 app.get('/', (_req, res) => res.json({ ok: true, servicio: 'persistencia', puerto: process.env.PORT || 3001 }));
 

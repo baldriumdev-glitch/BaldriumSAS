@@ -11,4 +11,14 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
+// Sin este listener, si el servidor de MySQL cierra una conexión inactiva del pool
+// (algo normal en bases de datos administradas como Railway), mysql2 emite un
+// 'error' en el pool. Un EventEmitter sin listener para 'error' relanza esa
+// excepción y tumba todo el proceso de Node — por eso la persistencia se caía
+// entera ante un simple "Connection lost". Con el listener, el pool solo
+// descarta la conexión muerta y crea una nueva en la siguiente consulta.
+pool.on('error', (err) => {
+    console.error('[MySQL Pool] Error de conexión (recuperado automáticamente):', err.message);
+});
+
 module.exports = pool;

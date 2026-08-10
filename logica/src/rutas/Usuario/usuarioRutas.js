@@ -52,6 +52,30 @@ router.post('/', async (req, res) => {
     }
 });
 
+// GET /api/Usuario/parametros-beneficio
+router.get('/parametros-beneficio', async (_req, res) => {
+    try {
+        res.json(await svc.obtenerParametrosBeneficio());
+    } catch (err) {
+        console.error('Error al obtener parámetros de beneficio:', err);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+// PUT /api/Usuario/parametros-beneficio
+// OJO: debe ir antes de PUT /:cedula, si no Express interpretaría
+// "parametros-beneficio" como una cédula.
+router.put('/parametros-beneficio', async (req, res) => {
+    const auditCtx = { ip: extraerIP(req), device: extraerDispositivo(req), actor: req.usuario };
+    try {
+        const { valorMinimoCompra, minimoReferidosVisitados } = req.body;
+        const result = await svc.actualizarParametrosBeneficio(valorMinimoCompra, minimoReferidosVisitados, auditCtx);
+        res.json(result);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
 // PUT /api/Usuario/:cedula
 router.put('/:cedula', async (req, res) => {
     const { roles, ...datos } = req.body;
@@ -61,6 +85,7 @@ router.put('/:cedula', async (req, res) => {
         res.json({ mensaje: 'Trabajador actualizado correctamente.' });
     } catch (err) {
         if (err.message.includes('no encontrado')) return res.status(404).json({ error: err.message });
+        if (err.message.includes('ya está en uso')) return res.status(409).json({ error: err.message });
         console.error('Error al actualizar usuario:', err);
         res.status(500).json({ error: 'Error interno del servidor.' });
     }

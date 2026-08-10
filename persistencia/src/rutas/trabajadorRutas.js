@@ -32,6 +32,17 @@ router.get('/existe-correo', async (req, res) => {
     }
 });
 
+// GET /trabajadores/existe-codigo?codigo=&excluir=
+router.get('/existe-codigo', async (req, res) => {
+    try {
+        const { codigo, excluir } = req.query;
+        const existe = await repo.existeCodigoTrabajador(codigo, excluir || null);
+        res.json({ existe });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // GET /trabajadores/por-correo?correo=
 router.get('/por-correo', async (req, res) => {
     try {

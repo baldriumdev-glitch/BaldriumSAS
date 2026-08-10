@@ -30,6 +30,11 @@ const trabajador = {
         return _req('GET', `/trabajadores/existe-correo?${qs}`).then(r => r?.existe ?? false);
     },
 
+    existeCodigoTrabajador: (codigo, excluirCedula = null) => {
+        const qs = `codigo=${encodeURIComponent(codigo)}${excluirCedula ? `&excluir=${encodeURIComponent(excluirCedula)}` : ''}`;
+        return _req('GET', `/trabajadores/existe-codigo?${qs}`).then(r => r?.existe ?? false);
+    },
+
     buscarPorCorreo: (correo) =>
         _req('GET', `/trabajadores/por-correo?correo=${encodeURIComponent(correo)}`),
 
@@ -223,4 +228,29 @@ const prospecto = {
         _req('POST', '/prospectos/nueva-agenda', { ...datos, auditCtx }),
 };
 
-module.exports = { trabajador, inventario, auditoria, visita, compra, prospecto };
+// ─── Beneficios ──────────────────────────────────────────────────────────────
+
+const beneficio = {
+    obtenerParametros: () =>
+        _req('GET', '/beneficios/parametros'),
+
+    actualizarParametros: (valorMinimoCompra, minimoReferidosVisitados, auditCtx) =>
+        _req('PUT', '/beneficios/parametros', { valorMinimoCompra, minimoReferidosVisitados, auditCtx }),
+
+    listarComprasElegibles: () =>
+        _req('GET', '/beneficios/compras-elegibles'),
+
+    crear: (compraId, auditCtx) =>
+        _req('POST', '/beneficios', { compraId, auditCtx }),
+
+    listarEnRevision: () =>
+        _req('GET', '/beneficios/revision'),
+
+    listarProductosDisponibles: () =>
+        _req('GET', '/beneficios/productos-disponibles'),
+
+    cambiarEstado: (beneficioId, estado, inventarioId, auditCtx) =>
+        _req('POST', `/beneficios/${beneficioId}/estado`, { estado, inventarioId, auditCtx }),
+};
+
+module.exports = { trabajador, inventario, auditoria, visita, compra, prospecto, beneficio };

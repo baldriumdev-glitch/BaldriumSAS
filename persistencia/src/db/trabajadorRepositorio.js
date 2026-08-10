@@ -48,7 +48,7 @@ async function crearTrabajador(datos, rolesIds = []) {
             `INSERT INTO trabajador
                 (Cedula, Contrasena, Nombre, Celular, Telefono, CorreoElectronico, Direccion, CodigoTrabajador)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [Cedula, hash, Nombre, Celular, Telefono, CorreoElectronico, Direccion, CodigoTrabajador]
+            [Cedula, hash, Nombre, Celular, Telefono || null, CorreoElectronico, Direccion, CodigoTrabajador]
         );
 
         for (const rolId of rolesIds) {
@@ -78,6 +78,15 @@ async function existeCorreo(correo, excluirCedula = null) {
         ? 'SELECT Cedula FROM trabajador WHERE CorreoElectronico = ? AND Cedula != ?'
         : 'SELECT Cedula FROM trabajador WHERE CorreoElectronico = ?';
     const params = excluirCedula ? [correo, excluirCedula] : [correo];
+    const [rows] = await pool.execute(sql, params);
+    return rows.length > 0;
+}
+
+async function existeCodigoTrabajador(codigo, excluirCedula = null) {
+    const sql = excluirCedula
+        ? 'SELECT Cedula FROM trabajador WHERE CodigoTrabajador = ? AND Cedula != ?'
+        : 'SELECT Cedula FROM trabajador WHERE CodigoTrabajador = ?';
+    const params = excluirCedula ? [codigo, excluirCedula] : [codigo];
     const [rows] = await pool.execute(sql, params);
     return rows.length > 0;
 }
@@ -179,7 +188,7 @@ async function listarRoles() {
 }
 
 module.exports = {
-    buscarPorCedula, crearTrabajador, existeCedula, existeCorreo, buscarPorCorreo,
+    buscarPorCedula, crearTrabajador, existeCedula, existeCorreo, existeCodigoTrabajador, buscarPorCorreo,
     actualizarContrasena, actualizarPerfil,
     listarTodosConRoles, actualizarTrabajador, cambiarEstado, listarRoles
 };

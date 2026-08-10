@@ -1,4 +1,4 @@
-const { prospecto, visita, trabajador } = require('../../../infraestructura/persistenciaCliente');
+const { prospecto, visita, trabajador, beneficio } = require('../../../infraestructura/persistenciaCliente');
 
 async function listarPendientes() {
     return prospecto.listarPendientes();
@@ -94,6 +94,14 @@ async function buscarVisitasFallidas(q) {
     return visita.buscarFallidas(q);
 }
 
+async function listarComprasElegiblesBeneficio() {
+    return beneficio.listarComprasElegibles();
+}
+
+async function crearBeneficio(compraId, auditCtx) {
+    return beneficio.crear(compraId, auditCtx);
+}
+
 module.exports = {
     listarPendientes, listarEnGestion, buscarPendientes, buscarEnGestion,
     agendarVisita, cambiarEstadoProspecto, crearProspectoYAgendar, listarAsesoresComerciales,
@@ -101,4 +109,5 @@ module.exports = {
     obtenerDetalleVisita, editarVisita, cancelarVisita, cambiarEstadoVisita,
     listarVisitasFallidas, kpiVisitasFallidas,
     buscarVisitasVisitadas, buscarVisitasPorGestionar, buscarVisitasFallidas,
+    listarComprasElegiblesBeneficio, crearBeneficio,
 };
