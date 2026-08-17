@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
         const nuevo = await svc.crear(req.body, auditCtx);
         res.status(201).json({ mensaje: 'Producto creado exitosamente.', producto: nuevo });
     } catch (err) {
-        if (err.message.includes('ya está registrado') || err.message.includes('ya existe')) {
+        if (err.message.toLowerCase().includes('ya está registrado') || err.message.toLowerCase().includes('ya existe')) {
             return res.status(409).json({ error: err.message });
         }
         if (err.message.includes('requerid') || err.message.includes('álid') || err.message.includes('negativ')) {
@@ -62,6 +62,9 @@ router.put('/:id', async (req, res) => {
         res.json({ mensaje: 'Producto actualizado correctamente.' });
     } catch (err) {
         if (err.message.includes('no encontrado')) return res.status(404).json({ error: err.message });
+        if (err.message.toLowerCase().includes('ya está registrado') || err.message.toLowerCase().includes('ya existe')) {
+            return res.status(409).json({ error: err.message });
+        }
         if (err.message.includes('requerid') || err.message.includes('álid') || err.message.includes('negativ')) {
             return res.status(400).json({ error: err.message });
         }

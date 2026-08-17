@@ -44,10 +44,13 @@ async function eliminarProducto(id) {
     );
 }
 
+// Solo cuenta contra productos ACTIVOS: uno desactivado (soft-delete) libera
+// su nombre para reutilizarlo, sin perder su historial de compras/beneficios/
+// visitas (que dependen de su ID vía FK y no se pueden borrar en cascada).
 async function existeNombre(nombre, excluirId = null) {
     const sql = excluirId
-        ? 'SELECT ID FROM inventario WHERE Nombre = ? AND ID != ?'
-        : 'SELECT ID FROM inventario WHERE Nombre = ?';
+        ? 'SELECT ID FROM inventario WHERE Nombre = ? AND Activo = 1 AND ID != ?'
+        : 'SELECT ID FROM inventario WHERE Nombre = ? AND Activo = 1';
     const params = excluirId ? [nombre, excluirId] : [nombre];
     const [rows] = await pool.execute(sql, params);
     return rows.length > 0;
