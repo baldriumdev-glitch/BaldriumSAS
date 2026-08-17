@@ -142,6 +142,11 @@ async function actualizar(cedula, datos, rolesIds = [], auditCtx = {}) {
     const anterior = await obtenerUno(cedula);
     if (!anterior) throw new Error('Trabajador no encontrado.');
 
+    const { Nombre, Celular, CorreoElectronico, Direccion, CodigoTrabajador } = datos;
+    if (!Nombre || !Celular || !CorreoElectronico || !Direccion || !CodigoTrabajador) {
+        throw new ValidationError('Nombre, celular, correo, dirección y código de trabajador son requeridos.');
+    }
+
     if (!Array.isArray(rolesIds) || rolesIds.length === 0) {
         throw new ValidationError('Debes asignar al menos un rol al trabajador.');
     }
