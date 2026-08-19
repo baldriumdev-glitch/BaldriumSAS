@@ -49,14 +49,14 @@ async function obtenerAlimentacion() {
 }
 
 async function cambiarEstado(visitaId, estado, suplementos = [], auditCtx = {}, notas = null) {
-    await visita.cambiarEstado(visitaId, estado, notas);
+    // Se valida y descuenta el stock ANTES de marcar la visita como Visitado:
+    // si no hay suficiente stock, se rechaza todo y la visita no cambia de
+    // estado, en vez de quedar "Visitado" con el descuento de inventario
+    // fallado/silencioso.
     if (estado === 'Visitado' && suplementos.length > 0) {
-        try {
-            await visita.guardarSuplemento(visitaId, suplementos, auditCtx.actor);
-        } catch (err) {
-            console.error('[Suplemento] Error al guardar:', err.message);
-        }
+        await visita.guardarSuplemento(visitaId, suplementos, auditCtx.actor);
     }
+    await visita.cambiarEstado(visitaId, estado, notas);
     try {
         await auditoria.registrarSistema({
             cedulaTrabajador: auditCtx.actor?.cedula ?? null,

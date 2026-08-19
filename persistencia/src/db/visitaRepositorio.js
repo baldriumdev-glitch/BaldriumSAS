@@ -387,46 +387,72 @@ async function inventarioAlimentacion() {
     return rows;
 }
 
+// Todo o nada: si algún suplemento no tiene stock suficiente, no se descuenta
+// NADA (ni ese ítem ni los demás de la lista) y se lanza un error específico
+// nombrando el producto y el stock disponible, en vez de descontar de más
+// silenciosamente (Math.max(0, ...) dejaba la cantidad en 0 sin avisar).
 async function guardarSuplemento(visitaId, suplementos, actor = {}) {
     if (!suplementos || suplementos.length === 0) return;
 
-    for (const { inventarioId, cantidad } of suplementos) {
-        const cant = Number(cantidad) || 1;
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
 
-        const [[item]] = await pool.query(
-            'SELECT Nombre, Valor, Cantidad FROM inventario WHERE ID = ?',
-            [inventarioId]
-        );
-        if (!item) continue;
+        const items = [];
+        for (const { inventarioId, cantidad } of suplementos) {
+            const cant = Number(cantidad) || 1;
 
-        const cantidadAnterior  = item.Cantidad;
-        const cantidadPosterior = Math.max(0, cantidadAnterior - cant);
+            const [[item]] = await conn.query(
+                'SELECT Nombre, Valor, Cantidad FROM inventario WHERE ID = ? FOR UPDATE',
+                [inventarioId]
+            );
+            if (!item) throw new Error(`El producto seleccionado (ID ${inventarioId}) ya no existe.`);
+            if (cant > item.Cantidad) {
+                throw new Error(
+                    `No hay suficiente stock de "${item.Nombre}": disponible ${item.Cantidad}, solicitado ${cant}.`
+                );
+            }
 
-        await pool.query(
-            'INSERT INTO visita_suplementos (VisitaID, InventarioID) VALUES (?, ?)',
-            [visitaId, inventarioId]
-        );
+            items.push({ inventarioId, cant, item });
+        }
 
-        await pool.query(
-            'UPDATE inventario SET Cantidad = ? WHERE ID = ?',
-            [cantidadPosterior, inventarioId]
-        );
+        for (const { inventarioId, cant, item } of items) {
+            const cantidadAnterior  = item.Cantidad;
+            const cantidadPosterior = cantidadAnterior - cant;
 
-        await auditRepo.registrarInventario({
-            inventarioID:      inventarioId,
-            nombreProducto:    item.Nombre,
-            cedulaResponsable: actor.cedula ?? null,
-            nombreResponsable: actor.nombre ?? null,
-            tipoMovimiento:    'SALIDA',
-            cantidadAnterior,
-            cantidadMovimiento: cant,
-            cantidadPosterior,
-            valorUnitario:     item.Valor,
-            motivo:            'VISITA',
-            referenciaID:      visitaId,
-            tablaReferencia:   'visita',
-            observaciones:     null,
-        });
+            await conn.query(
+                'INSERT INTO visita_suplementos (VisitaID, InventarioID) VALUES (?, ?)',
+                [visitaId, inventarioId]
+            );
+
+            await conn.query(
+                'UPDATE inventario SET Cantidad = ? WHERE ID = ?',
+                [cantidadPosterior, inventarioId]
+            );
+
+            await auditRepo.registrarInventario({
+                inventarioID:      inventarioId,
+                nombreProducto:    item.Nombre,
+                cedulaResponsable: actor.cedula ?? null,
+                nombreResponsable: actor.nombre ?? null,
+                tipoMovimiento:    'SALIDA',
+                cantidadAnterior,
+                cantidadMovimiento: cant,
+                cantidadPosterior,
+                valorUnitario:     item.Valor,
+                motivo:            'VISITA',
+                referenciaID:      visitaId,
+                tablaReferencia:   'visita',
+                observaciones:     null,
+            });
+        }
+
+        await conn.commit();
+    } catch (e) {
+        await conn.rollback();
+        throw e;
+    } finally {
+        conn.release();
     }
 }
 

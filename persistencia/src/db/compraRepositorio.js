@@ -55,6 +55,11 @@ async function crearClienteDesdeProspecto(personaId, datos, auditCtx = {}) {
     }
 }
 
+// Todo o nada: si algún ítem no tiene stock suficiente, no se crea la compra
+// ni se descuenta NADA (ni ese ítem ni los demás), y se lanza un error
+// específico nombrando el producto y el stock disponible, en vez de
+// descontar de más silenciosamente (Math.max(0, ...) dejaba la cantidad en
+// 0 sin avisar cuando se pedía más de lo disponible).
 async function crearCompra(cedulaCliente, actor, formaPago, notas, items, referidos = null, auditCtx = {}) {
     const conn = await pool.getConnection();
     try {
@@ -64,10 +69,13 @@ async function crearCompra(cedulaCliente, actor, formaPago, notas, items, referi
         const enriched = [];
         for (const { inventarioId, cantidad } of items) {
             const [[inv]] = await conn.query(
-                'SELECT Nombre, Valor, Cantidad FROM inventario WHERE ID = ?', [inventarioId]
+                'SELECT Nombre, Valor, Cantidad FROM inventario WHERE ID = ? FOR UPDATE', [inventarioId]
             );
             if (!inv) throw new Error(`Producto ${inventarioId} no encontrado`);
             const cant = Number(cantidad) || 1;
+            if (cant > inv.Cantidad) {
+                throw new Error(`No hay suficiente stock de "${inv.Nombre}": disponible ${inv.Cantidad}, solicitado ${cant}.`);
+            }
             const precio = Number(inv.Valor);
             total += cant * precio;
             enriched.push({
@@ -86,16 +94,17 @@ async function crearCompra(cedulaCliente, actor, formaPago, notas, items, referi
         );
         const compraId = result.insertId;
 
-        for (const { inventarioId, cantidad, precioUnitario, cantidadAnterior } of enriched) {
+        for (const item of enriched) {
+            const { inventarioId, cantidad, precioUnitario, cantidadAnterior } = item;
             await conn.query(
                 `INSERT INTO compra_inventario (CompraID, InventarioID, Cantidad, PrecioUnitario)
                  VALUES (?, ?, ?, ?)`,
                 [compraId, inventarioId, cantidad, precioUnitario]
             );
-            const cantidadPosterior = Math.max(0, cantidadAnterior - cantidad);
+            item.cantidadPosterior = cantidadAnterior - cantidad;
             await conn.query(
                 'UPDATE inventario SET Cantidad = ? WHERE ID = ?',
-                [cantidadPosterior, inventarioId]
+                [item.cantidadPosterior, inventarioId]
             );
         }
 
@@ -137,8 +146,7 @@ async function crearCompra(cedulaCliente, actor, formaPago, notas, items, referi
         await conn.commit();
 
         // Auditoría (no-blocking, falla silenciosamente si el ENUM no tiene 'VENTA')
-        for (const { inventarioId, cantidad, precioUnitario, nombre, cantidadAnterior } of enriched) {
-            const cantidadPosterior = Math.max(0, cantidadAnterior - cantidad);
+        for (const { inventarioId, cantidad, precioUnitario, nombre, cantidadAnterior, cantidadPosterior } of enriched) {
             auditRepo.registrarInventario({
                 inventarioID:       inventarioId,
                 nombreProducto:     nombre,
