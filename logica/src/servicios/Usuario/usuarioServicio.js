@@ -5,6 +5,10 @@ const { ValidationError, validarCamposTrabajador } = require('../../utils/valida
 // de ValidationError para que la ruta responda 409 en vez de 400/500.
 class ConflictError extends Error {}
 
+// La BD compara correo/código sin distinguir mayúsculas (collation *_ci),
+// así que la comparación "¿cambió?" debe hacer lo mismo.
+const _normalizar = (v) => String(v ?? '').trim().toLowerCase();
+
 async function listar() {
     return await trabajador.listarTodosConRoles();
 }
@@ -95,11 +99,16 @@ async function actualizar(cedula, datos, rolesIds = [], auditCtx = {}) {
     }
     validarCamposTrabajador(datos);
 
-    if (datos.CorreoElectronico && await trabajador.existeCorreo(datos.CorreoElectronico, cedula)) {
-        throw new ConflictError(`El correo ${datos.CorreoElectronico} ya está en uso por otro trabajador.`);
+    // Solo se valida unicidad si el valor cambió: si el Director edita otro
+    // campo (p. ej. el nombre) no debe bloquearse por el correo/código que el
+    // trabajador ya tenía, aunque en BD haya un duplicado heredado.
+    const correoCambio = _normalizar(CorreoElectronico) !== _normalizar(anterior.correo);
+    if (correoCambio && await trabajador.existeCorreo(CorreoElectronico, cedula)) {
+        throw new ConflictError(`El correo ${CorreoElectronico} ya está en uso por otro trabajador.`);
     }
 
-    if (datos.CodigoTrabajador && await trabajador.existeCodigoTrabajador(datos.CodigoTrabajador, cedula)) {
+    const codigoCambio = _normalizar(CodigoTrabajador) !== _normalizar(anterior.codigoTrabajador);
+    if (codigoCambio && await trabajador.existeCodigoTrabajador(CodigoTrabajador, cedula)) {
         throw new ConflictError(`El código de trabajador ${datos.CodigoTrabajador} ya está en uso por otro trabajador.`);
     }
 

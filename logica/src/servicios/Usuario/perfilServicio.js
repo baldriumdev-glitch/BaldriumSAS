@@ -3,6 +3,9 @@ const jwt     = require('jsonwebtoken');
 const { trabajador, auditoria } = require('../../infraestructura/persistenciaCliente');
 const { ValidationError, validarCamposTrabajador } = require('../../utils/validacionesTrabajador');
 
+// Choque de unicidad (correo de otro trabajador): la ruta responde 409.
+class ConflictError extends Error {}
+
 async function obtenerPerfil(cedula) {
     const resultado = await trabajador.buscarPorCedula(cedula);
     if (!resultado) throw new Error('Usuario no encontrado.');
@@ -27,6 +30,15 @@ async function actualizarPerfil(cedula, datos, auditCtx = {}) {
     validarCamposTrabajador(datos);
 
     const anterior = await obtenerPerfil(cedula);
+
+    // Sin esta validación un trabajador podía ponerse el correo de otro desde
+    // "Mi perfil", y luego la edición de usuarios (Director) chocaba con ese
+    // duplicado aunque no se estuviera cambiando el correo.
+    const correoCambio = CorreoElectronico.trim().toLowerCase() !== String(anterior.correo ?? '').trim().toLowerCase();
+    if (correoCambio && await trabajador.existeCorreo(CorreoElectronico, cedula)) {
+        throw new ConflictError(`El correo ${CorreoElectronico} ya está en uso por otro trabajador.`);
+    }
+
     await trabajador.actualizarPerfil(cedula, { Nombre, Celular, Telefono, CorreoElectronico, Direccion });
 
     auditoria.registrarSistema({
@@ -89,4 +101,4 @@ async function cambiarContrasena(cedula, contrasenaActual, nuevaContrasena, audi
     return { token };
 }
 
-module.exports = { obtenerPerfil, actualizarPerfil, cambiarContrasena, ValidationError };
+module.exports = { obtenerPerfil, actualizarPerfil, cambiarContrasena, ValidationError, ConflictError };

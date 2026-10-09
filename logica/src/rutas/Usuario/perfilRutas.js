@@ -1,7 +1,7 @@
 const express  = require('express');
 const router   = express.Router();
 const svc = require('../../servicios/Usuario/perfilServicio');
-const { ValidationError } = svc;
+const { ValidationError, ConflictError } = svc;
 const { verificarToken } = require('../../seguridad/jwtMiddleware');
 const { extraerIP, extraerDispositivo } = require('../../utils/requestHelpers');
 
@@ -23,6 +23,7 @@ router.put('/', async (req, res) => {
         await svc.actualizarPerfil(req.usuario.cedula, req.body, auditCtx);
         res.json({ mensaje: 'Perfil actualizado correctamente.' });
     } catch (err) {
+        if (err instanceof ConflictError)   return res.status(409).json({ error: err.message });
         if (err instanceof ValidationError) return res.status(400).json({ error: err.message });
         console.error('Error al actualizar perfil:', err);
         res.status(500).json({ error: 'Error interno del servidor.' });
